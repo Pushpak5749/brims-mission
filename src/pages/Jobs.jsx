@@ -1,8 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import MiniProfileCard from '../components/MiniProfileCard';
+import { db } from '../firebase';
+import { collection, query, getDocs } from 'firebase/firestore';
 
 export default function Jobs() {
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const q = query(collection(db, 'jobs'));
+        const querySnapshot = await getDocs(q);
+        const jobsList = [];
+        querySnapshot.forEach((doc) => {
+          jobsList.push({ id: doc.id, ...doc.data() });
+        });
+        
+        setJobs(jobsList);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
   const extraSidebarLinks = (
     <div className="flex flex-col">
       <div className="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors border-b border-outline-variant/50">
@@ -24,114 +50,99 @@ export default function Jobs() {
     </div>
   );
 
-  const jobs = [
-    {
-      id: 1,
-      title: "Co Founder",
-      company: "THYNF",
-      location: "India (Remote)",
-      reviewing: true,
-      promoted: true,
-      logo: "https://ui-avatars.com/api/?name=TH&background=E8F5E9&color=2E7D32&font-size=0.4"
-    },
-    {
-      id: 2,
-      title: "Chief Business Officer - AI Consulting",
-      company: "Stealth Indian Startup",
-      location: "India (Remote)",
-      reviewing: true,
-      promoted: true,
-      logo: "https://ui-avatars.com/api/?name=SI&background=212121&color=fff&font-size=0.4"
-    },
-    {
-      id: 3,
-      title: "Cofounder with Investment (Angel/Advisor)",
-      company: "Zlosure AI",
-      location: "Gurugram (Hybrid)",
-      reviewing: true,
-      promoted: false,
-      logo: "https://ui-avatars.com/api/?name=ZA&background=F3E5F5&color=7B1FA2&font-size=0.4"
-    }
-  ];
-
   return (
     <div className="pt-24 pb-28 md:pb-12 max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop text-on-surface">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Sidebar */}
         <div className="hidden lg:block lg:col-span-3">
-          <MiniProfileCard extraLinks={extraSidebarLinks} />
+          <MiniProfileCard extraContent={extraSidebarLinks} />
         </div>
 
         {/* Main Content Area */}
         <div className="lg:col-span-9 space-y-4">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm p-6">
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm"
+          >
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h2 className="font-headline-sm font-bold text-gray-900">Jobs based on your preferences</h2>
-                <p className="text-body-sm text-gray-500">Full-time Founder, on-site or hybrid or remote in Greater Delhi Area</p>
+                <h2 className="font-label-lg font-bold text-gray-900">Jobs based on your preferences</h2>
+                <p className="text-body-sm text-gray-600">Full-time Founder, on-site or hybrid or remote in Greater Delhi Area</p>
               </div>
-              <button className="w-10 h-10 rounded-full border border-gray-400 text-gray-600 flex items-center justify-center hover:bg-gray-100 transition-colors">
-                <span className="material-symbols-outlined text-[20px]">edit</span>
+              <button className="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center transition-colors border border-outline">
+                <span className="material-symbols-outlined text-[18px] text-gray-600">edit</span>
               </button>
             </div>
 
-            <div className="bg-[#E8F3EB] border border-[#C5E1CE] p-3 rounded-lg flex items-start justify-between mb-6">
-              <p className="text-body-sm text-gray-800"><span className="font-bold">New:</span> Edit preferences to include industries, skills and more to see more relevant jobs</p>
-              <button className="text-gray-600 hover:bg-[#D5EADF] p-1 rounded transition-colors ml-2">
-                <span className="material-symbols-outlined text-[18px]">close</span>
+            <div className="bg-[#E8F5E9] border border-[#C8E6C9] rounded-lg p-3 flex justify-between items-center mb-2">
+              <p className="text-body-sm text-[#2E7D32]">
+                <strong>New:</strong> Edit preferences to include industries, skills and more to see more relevant jobs
+              </p>
+              <button className="text-[#2E7D32] hover:bg-[#C8E6C9] rounded-full p-1 transition-colors">
+                <span className="material-symbols-outlined text-[16px]">close</span>
               </button>
             </div>
+          </motion.div>
 
-            <div className="space-y-0">
-              {jobs.map((job, idx) => (
-                <div key={job.id} className={`flex gap-4 py-4 ${idx !== jobs.length - 1 ? 'border-b border-outline-variant' : ''}`}>
-                  <div className="w-14 h-14 bg-white border border-outline-variant rounded overflow-hidden shrink-0 mt-1">
-                    <img src={job.logo} alt={job.company} className="w-full h-full object-cover" />
-                  </div>
+          {/* Job Feed */}
+          <div className="bg-white border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+            {loading ? (
+              <div className="flex justify-center items-center h-48">
+                <span className="material-symbols-outlined animate-spin text-primary text-4xl">refresh</span>
+              </div>
+            ) : jobs.length > 0 ? (
+              jobs.map((job, i) => (
+                <motion.div 
+                  key={job.id}
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.1 }}
+                  className="p-5 border-b border-outline-variant/50 hover:bg-surface-container-low transition-colors flex gap-4 cursor-pointer group"
+                >
+                  <img src={job.logo || "https://ui-avatars.com/api/?name=JOB"} alt={job.company} className="w-14 h-14 object-cover" />
                   <div className="grow">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-label-lg font-bold text-primary hover:underline cursor-pointer">{job.title}</h3>
-                      <button className="text-gray-500 hover:bg-gray-100 p-1 rounded-full transition-colors ml-2">
-                        <span className="material-symbols-outlined text-[20px]">close</span>
+                      <h3 className="font-label-lg font-bold text-primary group-hover:underline">{job.title}</h3>
+                      <button className="text-gray-400 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="material-symbols-outlined">close</span>
                       </button>
                     </div>
-                    <p className="text-body-md text-gray-900">{job.company}</p>
-                    <p className="text-body-sm text-gray-500">{job.location}</p>
+                    <p className="text-body-sm text-gray-900 font-bold">{job.company}</p>
+                    <p className="text-body-sm text-gray-600 mb-1">{job.location}</p>
                     
                     {job.reviewing && (
-                      <div className="flex items-center gap-1 mt-1 text-green-700">
-                        <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                        <span className="text-[12px]">Actively reviewing applicants</span>
+                      <div className="flex items-center gap-1 text-[#2E7D32] mb-1">
+                        <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                        <span className="text-[12px] font-bold">Actively reviewing applicants</span>
                       </div>
                     )}
                     
-                    <div className="flex items-center gap-1 mt-1 text-[12px] text-gray-500">
-                      {job.promoted && <span>Promoted · </span>}
-                      {!job.promoted && <span>5 days ago · </span>}
-                      <span className="text-primary font-bold flex items-center gap-1">
+                    <div className="flex items-center gap-3 mt-1">
+                      {job.promoted && <span className="text-[10px] text-gray-500">Promoted</span>}
+                      <span className="flex items-center gap-1 text-[12px] text-gray-900 font-bold">
                         <span className="material-symbols-outlined text-[14px]">work</span> Easy Apply
                       </span>
                     </div>
                   </div>
+                </motion.div>
+              ))
+            ) : (
+              <div className="p-12 text-center">
+                <div className="w-16 h-16 bg-surface-container-low rounded-full flex items-center justify-center mx-auto mb-4 border border-outline">
+                  <span className="material-symbols-outlined text-3xl text-gray-400">work_off</span>
                 </div>
-              ))}
-            </div>
-            
-            <div className="border-t border-outline-variant mt-2 pt-4 text-center">
-              <button className="font-label-md font-bold text-gray-600 hover:text-gray-900 hover:underline">Show all →</button>
-            </div>
-          </motion.div>
+                <h3 className="font-label-lg font-bold text-gray-900 mb-2">No jobs posted yet</h3>
+                <p className="text-body-md text-gray-600 max-w-sm mx-auto mb-6">
+                  Check back soon! When recruiters post new positions, they will show up right here in your feed.
+                </p>
+                <button className="bg-primary text-white font-label-md px-6 py-2 rounded-full hover:bg-primary/90 transition-colors shadow-sm">
+                  Update Preferences
+                </button>
+              </div>
+            )}
+          </div>
 
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm p-6">
-            <h2 className="font-headline-sm font-bold text-gray-900 mb-2">Jobs that match your profile</h2>
-            <p className="text-body-sm text-gray-500 mb-4">Based on the job criteria and your profile</p>
-            <div className="text-center py-8">
-              <p className="text-body-md text-gray-600">More jobs will appear here as you update your profile.</p>
-            </div>
-          </motion.div>
         </div>
-
       </div>
     </div>
   );

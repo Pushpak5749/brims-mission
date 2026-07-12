@@ -19,35 +19,19 @@ export default function Profile() {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   useEffect(() => {
-    // If not logged in, redirect to login
     if (!currentUser) {
       navigate('/login');
       return;
     }
 
-    // Load custom portfolio data if they have created one
-    const portfolios = JSON.parse(localStorage.getItem('custom_portfolios') || '[]');
-    // Try to find the user's portfolio by matching name, otherwise use fallback
-    const userPortfolio = portfolios.find(p => p.name === currentUser.displayName);
-
-    if (userPortfolio) {
-      setProfileData({
-        name: userPortfolio.name,
-        role: userPortfolio.role,
-        location: 'Greater Area',
-        university: 'University',
-        skills: userPortfolio.tags || []
-      });
-    } else {
-      // Fallback defaults
-      setProfileData({
-        name: currentUser.displayName || 'Demo User',
-        role: 'Aspiring Professional',
-        location: 'United States',
-        university: 'University',
-        skills: ['Communication', 'Teamwork']
-      });
-    }
+    setProfileData({
+      name: currentUser.displayName || 'Demo User',
+      role: currentUser.role || 'Aspiring Professional',
+      location: currentUser.location || 'United States',
+      university: currentUser.university || 'University',
+      skills: currentUser.skills || ['Communication', 'Teamwork'],
+      status: currentUser.status || 'searching'
+    });
   }, [currentUser, navigate]);
 
   const handleSaveProfileInfo = (newData) => {
@@ -127,9 +111,20 @@ export default function Profile() {
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-6 flex flex-wrap gap-2">
-                <button className="bg-primary text-white font-label-md px-4 py-1.5 rounded-full hover:bg-primary/90 transition-colors shadow-sm">
-                  Open to
+              <div className="mt-6 flex flex-wrap gap-3">
+                <button 
+                  onClick={() => handleSaveProfileInfo({ ...profileData, status: 'searching' })}
+                  className={`font-label-md px-5 py-2 rounded-full transition-colors shadow-sm flex items-center gap-2 ${profileData.status === 'searching' ? 'bg-primary text-white border-2 border-primary' : 'bg-surface border-2 border-outline text-on-surface-variant hover:bg-surface-container-low'}`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">search</span>
+                  Searching for Job
+                </button>
+                <button 
+                  onClick={() => handleSaveProfileInfo({ ...profileData, status: 'hiring' })}
+                  className={`font-label-md px-5 py-2 rounded-full transition-colors shadow-sm flex items-center gap-2 ${profileData.status === 'hiring' ? 'bg-[#2E7D32] text-white border-2 border-[#2E7D32]' : 'bg-surface border-2 border-outline text-on-surface-variant hover:bg-surface-container-low'}`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">work</span>
+                  I am Hiring
                 </button>
               </div>
             </div>
@@ -137,14 +132,16 @@ export default function Profile() {
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}
-            className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm relative overflow-hidden group"
+            className={`border rounded-xl p-6 shadow-sm relative overflow-hidden group ${profileData.status === 'searching' ? 'bg-blue-50/50 border-primary/20' : 'bg-green-50/50 border-green-600/20'}`}
           >
-            <div className="absolute top-4 right-4 text-on-surface-variant group-hover:text-primary cursor-pointer">
-              <span className="material-symbols-outlined text-xl">edit</span>
-            </div>
-            <h2 className="font-label-lg font-bold text-gray-900 mb-1">Open to work <span className="font-normal text-on-surface-variant ml-1">• Recruiters only</span></h2>
-            <p className="text-body-sm text-gray-800">Greater Delhi Area · On-site · Hybrid · Remote</p>
-            <a href="#" className="font-label-md font-bold text-primary mt-2 inline-block hover:underline">Show details</a>
+            <h2 className={`font-label-lg font-bold mb-1 ${profileData.status === 'searching' ? 'text-primary' : 'text-[#2E7D32]'}`}>
+              {profileData.status === 'searching' ? 'Open to work' : 'Actively Hiring'}
+            </h2>
+            <p className="text-body-sm text-gray-800">
+              {profileData.status === 'searching' 
+                ? 'Your profile will be shown in the Discover page to recruiters.' 
+                : 'Your profile will be shown in the Network page for students to find.'}
+            </p>
           </motion.div>
 
           <motion.div 

@@ -32,7 +32,8 @@ export function AuthProvider({ children }) {
           photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=800000&color=fff`,
           role: 'Student', // Default role
           location: '',
-          university: ''
+          university: '',
+          status: 'searching' // Default status: 'searching' or 'hiring'
         };
 
         if (userSnap.exists()) {
@@ -100,7 +101,8 @@ export function AuthProvider({ children }) {
       displayName: newData.name,
       role: newData.role,
       location: newData.location,
-      university: newData.university
+      university: newData.university,
+      status: newData.status || currentUser.status
     };
     setCurrentUser(updatedUser);
     
@@ -111,7 +113,8 @@ export function AuthProvider({ children }) {
         displayName: newData.name,
         role: newData.role,
         location: newData.location,
-        university: newData.university
+        university: newData.university,
+        status: newData.status || currentUser.status
       });
     } catch (error) {
       console.error("Error updating profile info in Firestore:", error);

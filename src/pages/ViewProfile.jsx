@@ -1,35 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useParams, useNavigate } from 'react-router-dom';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function ViewProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock user directory
-    const mockUsers = {
-      // Students
-      101: { name: "Jordan Ellis", role: "Aspiring Product Designer", university: "University of Design", location: "San Francisco, CA", tags: ["Figma", "UI Design"], img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBfQW9NyDHZDwDB_rJGh4v8cxeAyY2kdacpDockkX7kLAMqF1XM-vKA6FHUx9_liD2CUEdXrIDFMZX-LfHXKwntcWNwZ3X1Kx4EXC7d_4PXOjkIew2DikVq-jVkmwXEHeewCNH2WbRJvcuAZTygk-_XZNSd3TVCcDVo6Lt3hGK29GNf2g46M54qBNAx7c5RouzZDvXyg5l8h3asTTBtr1cFMZer4ldwDcd8IHMesEJOyvc8z1P62a0eeQiZTL3fTl3VkybEXEsUL1Y" },
-      102: { name: "Leo Zhang", role: "Full-stack Developer", university: "Tech Institute", location: "Seattle, WA", tags: ["React", "Node.js"], img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAezh7peIpaHThLsII_3zwmBWn_cmaxhqyji0xBaDqUBUj3Hyfje-uYe2OrFh1qcn4zTZQXi8n92PCBynwkT8NIOzjTuRQvPQcnoQDojyByMDi1t6jqsnvH4CKqKQTrFWwD_JwFzRdzA5XRGfsa714o3MfzGZvmtCdOZE97S33apIZyyPKkrSrLx-oasDKHPsaB9nyjwO2UpJWk4aDP4_85AcgHTBRpQ1tFu7t989hclWi8AIiBz-88ArMkuh9-lk0NQ4fxaT1KwKI" },
-      103: { name: "Elena Rossi", role: "AI Ethics Researcher", university: "Global University", location: "London, UK", tags: ["Python", "NLP"], img: "https://lh3.googleusercontent.com/aida-public/AB6AXuB9xho0VQE4Js80y6okUyuMgimPqXHQZlN3EYUWRZxp1-WLBJOol1s9b3Yjh-Czhw_o1GeJ8eiTi1TreRvJB1G6s7GE4Vv8lxJ2KJuyxUejPus1F-yjbvLcMmJIPzmbvhWkul89YNQb6PP7VS0R_8dTnquoKDgFTbrO-xmMC8irchOOavOhhCK-XRWWeLUIE6q_Tw8gKl7NjkOD1qDXV2r5sV2e3Osc48LsHBAty4qv-qhyu83w0scxo9kg4scNXsMeJFTpzPCuh2g" },
-      104: { name: "David Kim", role: "Financial Analyst", university: "Business School", location: "New York, NY", tags: ["SQL", "Modeling"], img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAYDUBCqMEqMu4jJegXQASiGbPp2pHZof05u0VS0LaGGM3O_l8VfneWoCsoh9AKK7Dk1FxFRlYS99UypldCzZ2Ahb_H69VDDwe6JXyFmo8PhJ6QMaVKUdkCKHmZcDDcpLfr7nIpnuG2YOMP2RmiriT_qXAruYe-YrMl27DDCma0K0g3ny66cn_CHyOtJuS-Pif0j7WdJpMEjmNYTAs-3capeavHAmOetEeekc83vJSHs8W0dinMB8RSFpLcGT2oJC-i6DYR-b7pzb4" },
-      // Recruiters
-      201: { name: "Sarah Jenkins", role: "Technical Recruiter at Google", university: "Google", location: "Mountain View, CA", tags: ["Hiring", "SWE"], img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBw7Efg7WTWWLmN8YiVV_DQZ344LHMxzK1MDiSxPjjscbQd2XIWj8Ed-LWBU1jPTYDO9Md2WAPtRA-a86a84fc5xPZIAJLjJ_drVZadhWdLj4YX24wKEcv4K7rKmtAFlsNpVfiKmXX_5CdKexfUgo-NvwJyku4MUneuTlxn5Tmli_xbPsX_X4FGyMwMhxZk9MMhFuthshEe-vBrsZg84K4adeh2zCu-ZSuvD2_WQeuQJrjdbqp1jR9Q69eNRG78qXN4oBxkzGqX9tc" },
-      202: { name: "Marcus Thorne", role: "Lead Recruiter at InnovateX", university: "InnovateX", location: "Austin, TX", tags: ["Startups", "Design"], img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCsLV3CsZrZwNiWagtgzQA7X523CD5wi196eDWJBENNuX2artD2isZIe0M_-aShWvJMoTUTfIEpLTRhKsAVFVn7GnYrotcsFhJyaWxKF3iVikvIW3q0SzPjeicwvoD9-7pceypVh1tlZ1DRgZpHaPRra8Zgj547JXrt0AlH6gLwX1ZdqmUCZJwPWU2xilXRNUl0iVP8ALmXuxONQJIMKC3FihdPqKuWH1oBHJtVZiN42DqB2d91JYUUTDZX5pxe7ug1Eu9jtYj7_io" },
+    const fetchUser = async () => {
+      try {
+        const docRef = doc(db, 'users', id);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          setProfileData(docSnap.data());
+        } else {
+          setProfileData(null); // User not found
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const user = mockUsers[id];
-    if (user) {
-      setProfileData(user);
-    } else {
-      // Fallback
-      setProfileData({
-        name: "Unknown User", role: "Member", university: "Platform", location: "Earth", tags: [], img: "https://ui-avatars.com/api/?name=User"
-      });
-    }
+    fetchUser();
   }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <span className="material-symbols-outlined animate-spin text-primary text-4xl">refresh</span>
+      </div>
+    );
+  }
+
+  if (!profileData) {
+    return (
+      <div className="pt-20 pb-24 min-h-screen container mx-auto flex flex-col items-center justify-center text-center">
+        <span className="material-symbols-outlined text-6xl text-gray-400 mb-4">person_off</span>
+        <h2 className="font-headline-sm text-gray-900 mb-2">Profile not found</h2>
+        <p className="text-body-md text-gray-600 mb-6">This user does not exist or has deleted their account.</p>
+        <button onClick={() => navigate(-1)} className="bg-primary text-white px-6 py-2 rounded-full font-label-md">
+          Go Back
+        </button>
+      </div>
+    );
+  }
 
   if (!profileData) return null;
 
@@ -56,18 +74,23 @@ export default function ViewProfile() {
             <div className="px-6 pb-6 relative">
               <div className="flex justify-between items-start">
                 <div className="w-32 h-32 rounded-full border-4 border-white overflow-hidden bg-surface shadow-md -mt-16 relative">
-                  <img className="w-full h-full object-cover" src={profileData.img} alt="Profile" />
+                  <img 
+                    className="w-full h-full object-cover" 
+                    src={profileData.photoURL || "https://ui-avatars.com/api/?name=User"} 
+                    alt="Profile" 
+                  />
                 </div>
               </div>
 
               <div className="mt-4 flex flex-col md:flex-row justify-between items-start gap-4">
                 <div>
                   <h1 className="font-headline-md text-headline-md font-bold text-gray-900 flex items-center gap-2">
-                    {profileData.name}
+                    {profileData.displayName}
+                    <span className="text-body-sm font-normal text-on-surface-variant px-2 bg-surface-container rounded-full">He/Him</span>
                   </h1>
                   <p className="font-body-lg text-gray-800 mt-1 max-w-md">{profileData.role}</p>
                   <p className="font-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
-                    {profileData.location} <span className="font-bold text-primary mx-1">·</span> 
+                    {profileData.location || "Earth"} <span className="font-bold text-primary mx-1">·</span> 
                     <a href="#" className="font-bold text-primary hover:underline">Contact info</a>
                   </p>
                   <p className="font-label-md text-primary mt-2 font-bold hover:underline cursor-pointer">500+ connections</p>
@@ -76,9 +99,9 @@ export default function ViewProfile() {
                 <div className="flex flex-col gap-2 md:items-end">
                   <div className="flex items-center gap-2 text-on-surface hover:text-primary hover:underline cursor-pointer">
                     <div className="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center">
-                      <span className="material-symbols-outlined text-sm">business</span>
+                      <span className="material-symbols-outlined text-sm">school</span>
                     </div>
-                    <span className="font-label-sm font-bold">{profileData.university}</span>
+                    <span className="font-label-sm font-bold">{profileData.university || "University"}</span>
                   </div>
                 </div>
               </div>
@@ -86,13 +109,15 @@ export default function ViewProfile() {
               {/* Action Buttons */}
               <div className="mt-6 flex flex-wrap gap-2">
                 <button className="bg-primary text-white font-label-md px-4 py-1.5 rounded-full hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[18px]">person_add</span> Connect
+                  <span className="material-symbols-outlined text-[18px]">person_add</span>
+                  Connect
                 </button>
-                <button className="border border-primary text-primary font-label-md px-4 py-1.5 rounded-full hover:bg-primary/5 transition-colors">
+                <button className="bg-surface border border-primary text-primary font-label-md px-4 py-1.5 rounded-full hover:bg-surface-container-low transition-colors flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[18px]">send</span>
                   Message
                 </button>
-                <button className="border border-outline text-on-surface w-9 h-9 rounded-full flex items-center justify-center hover:bg-surface-container-low transition-colors">
-                  <span className="material-symbols-outlined text-lg">more_horiz</span>
+                <button className="p-1.5 rounded-full border border-outline hover:bg-surface-container-low text-on-surface-variant transition-colors flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[20px]">more_horiz</span>
                 </button>
               </div>
             </div>
@@ -100,43 +125,70 @@ export default function ViewProfile() {
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}
+            className={`border rounded-xl p-6 shadow-sm relative overflow-hidden group ${(!profileData.status || profileData.status === 'searching') ? 'bg-blue-50/50 border-primary/20' : 'bg-green-50/50 border-green-600/20'}`}
+          >
+            <h2 className={`font-label-lg font-bold mb-1 ${(!profileData.status || profileData.status === 'searching') ? 'text-primary' : 'text-[#2E7D32]'}`}>
+              {(!profileData.status || profileData.status === 'searching') ? 'Open to work' : 'Actively Hiring'}
+            </h2>
+            <p className="text-body-sm text-gray-800">Greater Delhi Area · On-site · Hybrid · Remote</p>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}
             className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
           >
-            <h2 className="font-headline-sm font-bold text-gray-900 mb-4">Skills</h2>
-            <div className="flex gap-2 flex-wrap">
-              {profileData.tags.map(tag => (
-                <span key={tag} className="px-3 py-1 bg-surface-container-low border border-outline-variant rounded-full text-label-md text-gray-700 font-medium">
-                  {tag}
-                </span>
+            <h2 className="font-title-lg font-bold text-gray-900 mb-4">About</h2>
+            <p className="text-body-md text-gray-700 leading-relaxed">
+              Passionate about leveraging technology to solve complex problems. Experienced in building scalable web applications and intuitive user interfaces. Always eager to learn new technologies and collaborate with cross-functional teams to deliver impactful products.
+            </p>
+          </motion.div>
+
+          {/* Skills Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}
+            className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
+          >
+            <h2 className="font-title-lg font-bold text-gray-900 mb-4">Top Skills</h2>
+            <div className="flex flex-wrap gap-2">
+              {profileData.skills && profileData.skills.map((skill, index) => (
+                <div key={index} className="px-3 py-1.5 bg-surface-container rounded-lg border border-outline-variant text-body-sm font-medium text-gray-800 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[16px] text-primary">verified</span>
+                  {skill}
+                </div>
               ))}
             </div>
           </motion.div>
         </div>
 
-        {/* Sidebar Right Column */}
+        {/* Right Sidebar - Suggestions */}
         <div className="hidden lg:block lg:col-span-4 space-y-gutter">
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.1 }}
-            className="bg-white border border-outline-variant rounded-xl p-4 shadow-sm"
-          >
-            <h3 className="font-headline-sm font-bold text-gray-900 mb-4">People also viewed</h3>
+          <div className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm">
+            <h3 className="font-label-lg font-bold text-gray-900 mb-4">People also viewed</h3>
             <div className="space-y-4">
+              {/* Mock suggestions */}
               <div className="flex gap-3">
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high shrink-0">
-                  <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=0D8ABC&color=fff" alt="User" />
-                </div>
+                <img src="https://ui-avatars.com/api/?name=Alex&background=random" alt="Alex" className="w-12 h-12 rounded-full object-cover border border-outline-variant" />
                 <div>
-                  <h4 className="font-label-md font-bold text-gray-900 hover:text-primary hover:underline cursor-pointer">Jane Doe</h4>
-                  <p className="text-body-sm text-gray-600 line-clamp-2">Founder in the IT Services and IT Consulting industry...</p>
-                  <button className="mt-2 border border-outline-variant text-gray-700 font-label-md px-4 py-1 rounded-full hover:bg-surface-container-low transition-colors">
+                  <h4 className="font-label-md font-bold text-gray-900 hover:text-primary cursor-pointer hover:underline">Alex Chen</h4>
+                  <p className="text-body-sm text-gray-500 line-clamp-2">Software Engineer at TechCorp | React & Node.js</p>
+                  <button className="mt-1 px-3 py-1 rounded-full border border-gray-400 text-gray-600 font-label-sm hover:bg-gray-50 hover:border-gray-600 transition-colors">
+                    Connect
+                  </button>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <img src="https://ui-avatars.com/api/?name=Sam&background=random" alt="Sam" className="w-12 h-12 rounded-full object-cover border border-outline-variant" />
+                <div>
+                  <h4 className="font-label-md font-bold text-gray-900 hover:text-primary cursor-pointer hover:underline">Sam Taylor</h4>
+                  <p className="text-body-sm text-gray-500 line-clamp-2">Product Designer | Creating intuitive experiences</p>
+                  <button className="mt-1 px-3 py-1 rounded-full border border-gray-400 text-gray-600 font-label-sm hover:bg-gray-50 hover:border-gray-600 transition-colors">
                     Connect
                   </button>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
-
       </div>
     </div>
   );
