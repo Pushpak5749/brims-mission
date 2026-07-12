@@ -33,7 +33,8 @@ export function AuthProvider({ children }) {
           role: 'Student', // Default role
           location: '',
           university: '',
-          status: 'searching' // Default status: 'searching' or 'hiring'
+          status: 'searching', // Default status: 'searching' or 'hiring'
+          statusLastUpdated: 0 // Timestamp
         };
 
         if (userSnap.exists()) {
@@ -95,6 +96,20 @@ export function AuthProvider({ children }) {
   const updateProfileInfo = async (newData) => {
     if (!currentUser || !db) return;
     
+    const now = Date.now();
+    let newStatus = currentUser.status;
+    let newStatusLastUpdated = currentUser.statusLastUpdated;
+
+    // Check if they are trying to change their status
+    if (newData.status && newData.status !== currentUser.status) {
+      const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+      if (currentUser.statusLastUpdated && (now - currentUser.statusLastUpdated < oneWeekMs)) {
+        throw new Error("COOLDOWN_ACTIVE"); // Throw error to be caught by the UI
+      }
+      newStatus = newData.status;
+      newStatusLastUpdated = now;
+    }
+    
     // Update local React state instantly
     const updatedUser = { 
       ...currentUser, 
@@ -102,7 +117,8 @@ export function AuthProvider({ children }) {
       role: newData.role,
       location: newData.location,
       university: newData.university,
-      status: newData.status || currentUser.status
+      status: newStatus,
+      statusLastUpdated: newStatusLastUpdated
     };
     setCurrentUser(updatedUser);
     
@@ -114,10 +130,12 @@ export function AuthProvider({ children }) {
         role: newData.role,
         location: newData.location,
         university: newData.university,
-        status: newData.status || currentUser.status
+        status: newStatus,
+        statusLastUpdated: newStatusLastUpdated
       });
     } catch (error) {
       console.error("Error updating profile info in Firestore:", error);
+      throw error;
     }
   };
 

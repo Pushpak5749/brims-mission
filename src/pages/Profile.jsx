@@ -17,6 +17,39 @@ export default function Profile() {
   });
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [statusError, setStatusError] = useState("");
+
+  // Calculate cooldown
+  const now = Date.now();
+  const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+  let isOnCooldown = false;
+  let cooldownDays = 0;
+  
+  if (currentUser && currentUser.statusLastUpdated) {
+    const timeSinceUpdate = now - currentUser.statusLastUpdated;
+    if (timeSinceUpdate < oneWeekMs) {
+      isOnCooldown = true;
+      cooldownDays = Math.ceil((oneWeekMs - timeSinceUpdate) / (1000 * 60 * 60 * 24));
+    }
+  }
+
+  const handleStatusChange = async (newStatus) => {
+    if (newStatus === profileData.status) return; // No change
+    
+    if (isOnCooldown) {
+      setStatusError(`You can change your status again in ${cooldownDays} day(s).`);
+      return;
+    }
+    
+    setStatusError("");
+    try {
+      await handleSaveProfileInfo({ ...profileData, status: newStatus });
+    } catch (e) {
+      if (e.message === "COOLDOWN_ACTIVE") {
+        setStatusError("You can only change your status once a week.");
+      }
+    }
+  };
 
   useEffect(() => {
     if (!currentUser) {
@@ -111,21 +144,35 @@ export default function Profile() {
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-6 flex flex-wrap gap-3">
-                <button 
-                  onClick={() => handleSaveProfileInfo({ ...profileData, status: 'searching' })}
-                  className={`font-label-md px-5 py-2 rounded-full transition-colors shadow-sm flex items-center gap-2 ${profileData.status === 'searching' ? 'bg-primary text-white border-2 border-primary' : 'bg-surface border-2 border-outline text-on-surface-variant hover:bg-surface-container-low'}`}
-                >
-                  <span className="material-symbols-outlined text-[18px]">search</span>
-                  Searching for Job
-                </button>
-                <button 
-                  onClick={() => handleSaveProfileInfo({ ...profileData, status: 'hiring' })}
-                  className={`font-label-md px-5 py-2 rounded-full transition-colors shadow-sm flex items-center gap-2 ${profileData.status === 'hiring' ? 'bg-[#2E7D32] text-white border-2 border-[#2E7D32]' : 'bg-surface border-2 border-outline text-on-surface-variant hover:bg-surface-container-low'}`}
-                >
-                  <span className="material-symbols-outlined text-[18px]">work</span>
-                  I am Hiring
-                </button>
+              <div className="mt-6 flex flex-col gap-2">
+                <div className="flex flex-wrap gap-3">
+                  <button 
+                    onClick={() => handleStatusChange('searching')}
+                    className={`font-label-md px-5 py-2 rounded-full transition-colors shadow-sm flex items-center gap-2 ${profileData.status === 'searching' ? 'bg-primary text-white border-2 border-primary' : 'bg-surface border-2 border-outline text-on-surface-variant hover:bg-surface-container-low'} ${isOnCooldown && profileData.status !== 'searching' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">search</span>
+                    Searching for Job
+                  </button>
+                  <button 
+                    onClick={() => handleStatusChange('hiring')}
+                    className={`font-label-md px-5 py-2 rounded-full transition-colors shadow-sm flex items-center gap-2 ${profileData.status === 'hiring' ? 'bg-[#2E7D32] text-white border-2 border-[#2E7D32]' : 'bg-surface border-2 border-outline text-on-surface-variant hover:bg-surface-container-low'} ${isOnCooldown && profileData.status !== 'hiring' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">work</span>
+                    I am Hiring
+                  </button>
+                </div>
+                {statusError && (
+                  <p className="text-[12px] font-bold text-red-500 mt-1 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">error</span>
+                    {statusError}
+                  </p>
+                )}
+                {isOnCooldown && !statusError && (
+                  <p className="text-[12px] text-gray-500 mt-1 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">info</span>
+                    Status locked for {cooldownDays} more day(s)
+                  </p>
+                )}
               </div>
             </div>
           </motion.div>

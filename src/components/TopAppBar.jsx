@@ -27,11 +27,16 @@ export default function TopAppBar() {
         
         {currentUser ? (
           <div className="flex items-center gap-3 group relative ml-2">
-            <span className="hidden md:block font-label-md text-on-surface font-medium">{currentUser.displayName}</span>
+            <div className="hidden md:flex flex-col items-end mr-1">
+              <span className="font-label-md text-on-surface font-medium leading-tight">{currentUser.displayName}</span>
+              <span className="text-[10px] uppercase font-bold text-primary mt-0.5">
+                {!currentUser.status || currentUser.status === 'searching' ? 'OPEN TO WORK' : 'HIRING'}
+              </span>
+            </div>
             <div className="w-10 h-10 rounded-full overflow-hidden border border-outline-variant hover:opacity-80 transition-opacity cursor-pointer">
               <img 
                 className="w-full h-full object-cover" 
-                src={currentUser.photoURL || "https://lh3.googleusercontent.com/aida-public/AB6AXuDAQqMhSeEdtunAhQq_OT0BfqkD-AI0iHEt_r9MRfROcNyR6aDuBX1s3JQaWuxwyiF1hG5tFWWJU75lVPITssCppVVdCvAwypLZ0TVeSbEd5QsTjIDHxs5TDeMMz_WnqOQiyR0crSlkeitn-F5OfLmF6lmHxpcQ-cZaLKGmucKuQU5hbGCId1HaqP2ykpbs4MEuPslKWdOaLZU4kdhh9pfGU6heG4gVR00qFxYLiJeI8DtcNtf5U4SYuBsXoV0pZyS62GmH6P2XlKA"}
+                src={currentUser.photoURL || "https://ui-avatars.com/api/?name=User"}
                 alt="Profile" 
               />
             </div>
