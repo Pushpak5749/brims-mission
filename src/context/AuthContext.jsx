@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { auth, googleProvider } from '../firebase';
+import { auth, googleProvider, db } from '../firebase';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 const AuthContext = createContext();
 
@@ -13,25 +14,35 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If auth is not configured, fallback to mock session for UI testing
     if (!auth) {
-      const mockSession = localStorage.getItem('mock_user_session');
-      if (mockSession) {
-        setCurrentUser(JSON.parse(mockSession));
-      }
       setLoading(false);
       return;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Map Firebase user to our app's user structure
-        const mappedUser = {
+        // Fetch custom profile data from Firestore
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
+
+        let mappedUser = {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName || 'Brims User',
-          photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=800000&color=fff`
+          photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=800000&color=fff`,
+          role: 'Student', // Default role
+          location: '',
+          university: ''
         };
+
+        if (userSnap.exists()) {
+          // Merge Firestore data (which contains edits) with base user data
+          mappedUser = { ...mappedUser, ...userSnap.data() };
+        } else {
+          // First time logging in, create the document in Firestore
+          await setDoc(userRef, mappedUser);
+        }
+        
         setCurrentUser(mappedUser);
       } else {
         setCurrentUser(null);
@@ -44,7 +55,7 @@ export function AuthProvider({ children }) {
 
   const loginWithGoogle = async () => {
     if (!auth) {
-      alert("Firebase is not configured! Please add your Firebase API keys to Vercel.");
+      alert("Firebase is not configured!");
       return;
     }
     
@@ -59,48 +70,51 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     if (auth) {
       await signOut(auth);
-    } else {
-      setCurrentUser(null);
-      localStorage.removeItem('mock_user_session');
     }
   };
 
-  const updateProfilePhoto = (newPhotoBase64) => {
-    if (!currentUser) return;
+  const updateProfilePhoto = async (newPhotoBase64) => {
+    if (!currentUser || !db) return;
+    
+    // Update local React state instantly for snappy UI
     const updatedUser = { ...currentUser, photoURL: newPhotoBase64 };
     setCurrentUser(updatedUser);
     
-    const portfolios = JSON.parse(localStorage.getItem('custom_portfolios') || '[]');
-    const userIndex = portfolios.findIndex(p => p.name === currentUser.displayName);
-    if (userIndex !== -1) {
-      portfolios[userIndex].img = newPhotoBase64;
-      localStorage.setItem('custom_portfolios', JSON.stringify(portfolios));
+    // Push change to Firestore permanently
+    const userRef = doc(db, 'users', currentUser.uid);
+    try {
+      await updateDoc(userRef, {
+        photoURL: newPhotoBase64
+      });
+    } catch (error) {
+      console.error("Error updating photo in Firestore:", error);
     }
   };
 
-  const updateProfileInfo = (newData) => {
-    if (!currentUser) return;
-    const updatedUser = { ...currentUser, displayName: newData.name };
+  const updateProfileInfo = async (newData) => {
+    if (!currentUser || !db) return;
+    
+    // Update local React state instantly
+    const updatedUser = { 
+      ...currentUser, 
+      displayName: newData.name,
+      role: newData.role,
+      location: newData.location,
+      university: newData.university
+    };
     setCurrentUser(updatedUser);
     
-    const portfolios = JSON.parse(localStorage.getItem('custom_portfolios') || '[]');
-    const userIndex = portfolios.findIndex(p => p.name === currentUser.displayName);
-    if (userIndex !== -1) {
-      portfolios[userIndex].name = newData.name;
-      portfolios[userIndex].role = newData.role;
-      portfolios[userIndex].location = newData.location;
-      portfolios[userIndex].university = newData.university;
-      localStorage.setItem('custom_portfolios', JSON.stringify(portfolios));
-    } else {
-      portfolios.push({
-        name: newData.name,
+    // Push change to Firestore permanently
+    const userRef = doc(db, 'users', currentUser.uid);
+    try {
+      await updateDoc(userRef, {
+        displayName: newData.name,
         role: newData.role,
         location: newData.location,
-        university: newData.university,
-        tags: [],
-        img: currentUser.photoURL
+        university: newData.university
       });
-      localStorage.setItem('custom_portfolios', JSON.stringify(portfolios));
+    } catch (error) {
+      console.error("Error updating profile info in Firestore:", error);
     }
   };
 
