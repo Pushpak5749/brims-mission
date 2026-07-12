@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import GoogleAuthModal from '../components/GoogleAuthModal';
 
 export default function Login() {
   const { loginWithGoogle, loginWithEmail, signupWithEmail } = useAuth();
   const navigate = useNavigate();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
-  const [showGoogleModal, setShowGoogleModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   
@@ -42,12 +40,7 @@ export default function Login() {
     }
   };
 
-  const handleGoogleClick = () => {
-    setShowGoogleModal(true);
-  };
-
-  const handleGoogleAccountSelected = async () => {
-    setShowGoogleModal(false);
+  const handleGoogleClick = async () => {
     setIsLoggingIn(true);
     try {
       await loginWithGoogle();
@@ -204,12 +197,6 @@ export default function Login() {
           </div>
         </motion.div>
       </main>
-
-      <GoogleAuthModal 
-        isOpen={showGoogleModal} 
-        onClose={() => setShowGoogleModal(false)}
-        onSelectAccount={handleGoogleAccountSelected}
-      />
     </div>
   );
 }
