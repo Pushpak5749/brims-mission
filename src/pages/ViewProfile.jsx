@@ -136,31 +136,84 @@ export default function ViewProfile() {
             <p className="text-body-sm text-gray-800">Greater Delhi Area · On-site · Hybrid · Remote</p>
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}
-            className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
-          >
-            <h2 className="font-title-lg font-bold text-gray-900 mb-4">About</h2>
-            <p className="text-body-md text-gray-700 leading-relaxed">
-              Passionate about leveraging technology to solve complex problems. Experienced in building scalable web applications and intuitive user interfaces. Always eager to learn new technologies and collaborate with cross-functional teams to deliver impactful products.
-            </p>
-          </motion.div>
+          {/* About Section */}
+          {(profileData.about || (!profileData.status || profileData.status === 'searching')) && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}
+              className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
+            >
+              <h2 className="font-title-lg font-bold text-gray-900 mb-4">About</h2>
+              <p className="text-body-md text-gray-700 leading-relaxed whitespace-pre-line">
+                {profileData.about || "This user hasn't added an about section yet."}
+              </p>
+            </motion.div>
+          )}
+
+          {/* Experience Section */}
+          {profileData.experience && profileData.experience.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25 }}
+              className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
+            >
+              <h2 className="font-title-lg font-bold text-gray-900 mb-4 border-b border-outline-variant pb-3">Experience</h2>
+              <div className="space-y-6">
+                {profileData.experience.map((exp, index) => (
+                  <div key={index} className="flex gap-4 border-b border-outline-variant/50 pb-4 last:border-0 last:pb-0">
+                    <div className="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center shrink-0 border border-outline-variant shadow-sm">
+                      <span className="material-symbols-outlined text-gray-400">domain</span>
+                    </div>
+                    <div>
+                      <h3 className="font-label-lg font-bold text-gray-900">{exp.title}</h3>
+                      <p className="font-body-md text-gray-800">{exp.company}</p>
+                      <p className="font-body-sm text-gray-500">{exp.duration}</p>
+                      {exp.description && <p className="mt-2 text-body-sm text-gray-700 whitespace-pre-line leading-relaxed">{exp.description}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Projects Section */}
+          {profileData.projects && profileData.projects.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.28 }}
+              className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
+            >
+              <h2 className="font-title-lg font-bold text-gray-900 mb-4 border-b border-outline-variant pb-3">Projects</h2>
+              <div className="space-y-6">
+                {profileData.projects.map((proj, index) => (
+                  <div key={index} className="border-b border-outline-variant/50 pb-4 last:border-0 last:pb-0">
+                    <h3 className="font-label-lg font-bold text-gray-900">{proj.title}</h3>
+                    {proj.link && (
+                      <a href={proj.link} target="_blank" rel="noreferrer" className="text-primary hover:underline font-label-sm break-all">
+                        {proj.link}
+                      </a>
+                    )}
+                    {proj.description && <p className="mt-2 text-body-sm text-gray-700 whitespace-pre-line leading-relaxed">{proj.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
 
           {/* Skills Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}
-            className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
-          >
-            <h2 className="font-title-lg font-bold text-gray-900 mb-4">Top Skills</h2>
-            <div className="flex flex-wrap gap-2">
-              {profileData.skills && profileData.skills.map((skill, index) => (
-                <div key={index} className="px-3 py-1.5 bg-surface-container rounded-lg border border-outline-variant text-body-sm font-medium text-gray-800 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[16px] text-primary">verified</span>
-                  {skill}
-                </div>
-              ))}
-            </div>
-          </motion.div>
+          {profileData.skills && profileData.skills.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}
+              className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
+            >
+              <h2 className="font-title-lg font-bold text-gray-900 mb-4 border-b border-outline-variant pb-3">Top Skills</h2>
+              <div className="flex flex-wrap gap-2">
+                {profileData.skills.map((skill, index) => (
+                  <div key={index} className="px-3 py-1.5 bg-surface-container rounded-lg border border-outline-variant text-body-sm font-medium text-gray-800 flex items-center gap-2 shadow-sm">
+                    <span className="material-symbols-outlined text-[16px] text-primary">verified</span>
+                    {skill}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
 
         {/* Right Sidebar - Suggestions */}

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ProfilePhotoModal from '../components/ProfilePhotoModal';
 import ProfileInfoModal from '../components/ProfileInfoModal';
+import StudentProfileEditor from '../components/StudentProfileEditor';
 
 export default function Profile() {
   const { currentUser, updateProfileInfo } = useAuth();
@@ -191,36 +192,12 @@ export default function Profile() {
             </p>
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}
-            className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
-          >
-            <h2 className="font-headline-sm font-bold text-gray-900 mb-4">Suggested for you</h2>
-            <p className="text-body-sm text-on-surface-variant flex items-center gap-1 mb-4">
-              <span className="material-symbols-outlined text-[16px]">visibility</span> Private to you
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border border-outline-variant rounded-lg p-4 flex gap-4">
-                <div className="mt-1">
-                  <span className="material-symbols-outlined text-secondary text-2xl">stars</span>
-                </div>
-                <div>
-                  <h3 className="font-label-md font-bold text-gray-900">Stand out to employers</h3>
-                  <p className="text-body-sm text-gray-600 mt-1">Enhance your profile, craft standout messages, and assess job fit.</p>
-                </div>
-              </div>
-              <div className="border border-outline-variant rounded-lg p-4 flex gap-4">
-                <div className="mt-1">
-                  <span className="material-symbols-outlined text-primary text-2xl">magnet</span>
-                </div>
-                <div>
-                  <h3 className="font-label-md font-bold text-gray-900">Connect with people</h3>
-                  <p className="text-body-sm text-gray-600 mt-1">Connect with alumni to achieve your career goals faster.</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          {(!profileData.status || profileData.status === 'searching') && (
+            <StudentProfileEditor 
+              profileData={profileData} 
+              handleSaveProfileInfo={handleSaveProfileInfo} 
+            />
+          )}
         </div>
 
         {/* Sidebar Right Column */}

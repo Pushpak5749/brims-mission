@@ -34,7 +34,11 @@ export function AuthProvider({ children }) {
           location: '',
           university: '',
           status: 'searching', // Default status: 'searching' or 'hiring'
-          statusLastUpdated: 0 // Timestamp
+          statusLastUpdated: 0, // Timestamp
+          about: '',
+          experience: [],
+          projects: [],
+          skills: []
         };
 
         if (userSnap.exists()) {
@@ -110,13 +114,17 @@ export function AuthProvider({ children }) {
       newStatusLastUpdated = now;
     }
     
+    // Map 'name' back to 'displayName' for consistency
+    const cleanData = { ...newData };
+    if (cleanData.name) {
+      cleanData.displayName = cleanData.name;
+      delete cleanData.name;
+    }
+
     // Update local React state instantly
     const updatedUser = { 
       ...currentUser, 
-      displayName: newData.name,
-      role: newData.role,
-      location: newData.location,
-      university: newData.university,
+      ...cleanData,
       status: newStatus,
       statusLastUpdated: newStatusLastUpdated
     };
@@ -126,10 +134,7 @@ export function AuthProvider({ children }) {
     const userRef = doc(db, 'users', currentUser.uid);
     try {
       await updateDoc(userRef, {
-        displayName: newData.name,
-        role: newData.role,
-        location: newData.location,
-        university: newData.university,
+        ...cleanData,
         status: newStatus,
         statusLastUpdated: newStatusLastUpdated
       });
