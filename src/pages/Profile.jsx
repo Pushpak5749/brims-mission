@@ -83,6 +83,9 @@ export default function Profile() {
       university: currentUser.university || 'University',
       skills: currentUser.skills || ['Communication', 'Teamwork'],
       jobPosts: currentUser.jobPosts || [],
+      about: currentUser.about || '',
+      experience: currentUser.experience || [],
+      projects: currentUser.projects || [],
       status: effectiveStatus
     });
   }, [currentUser, navigate]);
