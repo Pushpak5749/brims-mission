@@ -86,6 +86,8 @@ export default function Profile() {
       about: currentUser.about || '',
       experience: currentUser.experience || [],
       projects: currentUser.projects || [],
+      resumeUrl: currentUser.resumeUrl || null,
+      resumeName: currentUser.resumeName || null,
       status: effectiveStatus
     });
   }, [currentUser, navigate]);

@@ -3,12 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import JobApplicationModal from '../components/JobApplicationModal';
 
 export default function ViewProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedJob, setSelectedJob] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -126,6 +128,17 @@ export default function ViewProfile() {
                 <button className="p-1.5 rounded-full border border-outline hover:bg-surface-container-low text-on-surface-variant transition-colors flex items-center justify-center">
                   <span className="material-symbols-outlined text-[20px]">more_horiz</span>
                 </button>
+                {profileData.status === 'searching' && profileData.resumeUrl && (
+                  <a 
+                    href={profileData.resumeUrl} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="ml-auto bg-[#0a66c2] text-white font-label-md px-5 py-1.5 rounded-full hover:bg-[#004182] transition-colors shadow-sm flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">description</span>
+                    View Resume
+                  </a>
+                )}
               </div>
             </div>
           </motion.div>
@@ -243,7 +256,7 @@ export default function ViewProfile() {
                       </div>
                       {job.description && <p className="mt-3 text-body-sm text-on-surface-variant whitespace-pre-line leading-relaxed">{job.description}</p>}
                     </div>
-                    {job.applyLink && (
+                    {job.applyLink ? (
                       <div className="md:self-center shrink-0 mt-3 md:mt-0">
                         <a 
                           href={job.applyLink.startsWith('http') ? job.applyLink : `https://${job.applyLink}`} 
@@ -253,6 +266,15 @@ export default function ViewProfile() {
                         >
                           Apply Now
                         </a>
+                      </div>
+                    ) : (
+                      <div className="md:self-center shrink-0 mt-3 md:mt-0">
+                        <button 
+                          onClick={() => setSelectedJob(job)}
+                          className="inline-block bg-[#2E7D32] text-white px-5 py-2 rounded-full font-label-md font-bold hover:bg-[#1B5E20] transition-colors whitespace-nowrap"
+                        >
+                          Apply Now
+                        </button>
                       </div>
                     )}
                   </div>
@@ -292,6 +314,13 @@ export default function ViewProfile() {
           </div>
         </div>
       </div>
+      {selectedJob && (
+        <JobApplicationModal 
+          job={selectedJob} 
+          recruiterId={id} 
+          onClose={() => setSelectedJob(null)} 
+        />
+      )}
     </div>
   );
 }

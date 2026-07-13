@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ApplicationsViewerModal from './ApplicationsViewerModal';
 
 export default function RecruiterProfileEditor({ profileData, handleSaveProfileInfo }) {
   const [editingSection, setEditingSection] = useState(null);
+  const [viewingApplicationsJob, setViewingApplicationsJob] = useState(null);
   
   // Local state for edits
   const [about, setAbout] = useState(profileData.about || '');
@@ -18,7 +20,7 @@ export default function RecruiterProfileEditor({ profileData, handleSaveProfileI
 
   const addJobPost = () => {
     if (!newJob.title || !newJob.company) return;
-    const newPost = { ...newJob, createdAt: Date.now() };
+    const newPost = { ...newJob, id: crypto.randomUUID(), createdAt: Date.now() };
     const updated = [...jobPosts, newPost];
     setJobPosts(updated);
     handleSaveProfileInfo({ ...profileData, jobPosts: updated });
@@ -146,11 +148,27 @@ export default function RecruiterProfileEditor({ profileData, handleSaveProfileI
                     <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">location_on</span> {job.location || 'Remote'}</span>
                     <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">schedule</span> {job.type || 'Full-time'}</span>
                   </div>
-                  {job.description && <p className="mt-3 text-body-sm text-on-surface-variant whitespace-pre-line leading-relaxed line-clamp-3">{job.description}</p>}
+                  {job.applyLink && (
+                    <a href={job.applyLink.startsWith('http') ? job.applyLink : `https://${job.applyLink}`} target="_blank" rel="noreferrer" className="text-primary hover:underline font-label-sm block mt-1 break-all">
+                      {job.applyLink}
+                    </a>
+                  )}
+                  {job.description && <p className="mt-2 text-body-sm text-on-surface-variant whitespace-pre-line leading-relaxed">{job.description}</p>}
+                  
+                  <div className="mt-4 flex gap-2">
+                    <button 
+                      onClick={() => setViewingApplicationsJob(job)}
+                      className="bg-primary/10 text-primary font-label-sm px-4 py-1.5 rounded-full hover:bg-primary/20 transition-colors flex items-center gap-1"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">visibility</span>
+                      View Applications
+                    </button>
+                  </div>
+                  
+                  <button onClick={() => deleteJobPost(index)} className="absolute right-2 top-2 p-2 rounded-full hover:bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="material-symbols-outlined text-sm">delete</span>
+                  </button>
                 </div>
-                <button onClick={() => deleteJobPost(index)} className="absolute right-2 top-2 p-2 rounded-full hover:bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="material-symbols-outlined text-sm">delete</span>
-                </button>
               </div>
             ))}
           </div>
@@ -158,6 +176,13 @@ export default function RecruiterProfileEditor({ profileData, handleSaveProfileI
       </motion.div>
 
       {renderModal()}
+      
+      {viewingApplicationsJob && (
+        <ApplicationsViewerModal 
+          job={viewingApplicationsJob} 
+          onClose={() => setViewingApplicationsJob(null)} 
+        />
+      )}
     </div>
   );
 }

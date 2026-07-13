@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { storage } from '../firebase';
+import { useAuth } from '../context/AuthContext';
 
 export default function StudentProfileEditor({ profileData, handleSaveProfileInfo }) {
   const [editingSection, setEditingSection] = useState(null);
@@ -11,8 +14,53 @@ export default function StudentProfileEditor({ profileData, handleSaveProfileInf
   const [projects, setProjects] = useState(profileData.projects || []);
 
   // Form states for new items
+  // Form states for new items
   const [newExp, setNewExp] = useState({ title: '', company: '', duration: '', description: '' });
   const [newProj, setNewProj] = useState({ title: '', link: '', description: '' });
+
+  const { currentUser } = useAuth();
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleResumeUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.type.includes('document')) {
+      alert('Please upload a PDF or DOC file.');
+      return;
+    }
+
+    if (!currentUser) return;
+
+    const storageRef = ref(storage, `resumes/${currentUser.uid}_${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    setIsUploading(true);
+
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setUploadProgress(progress);
+      },
+      (error) => {
+        console.error("Resume upload failed:", error);
+        alert('Upload failed. Please try again.');
+        setIsUploading(false);
+      },
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        handleSaveProfileInfo({ 
+          ...profileData, 
+          resumeUrl: downloadURL,
+          resumeName: file.name
+        });
+        setIsUploading(false);
+        setUploadProgress(0);
+      }
+    );
+  };
 
   const saveAbout = () => {
     handleSaveProfileInfo({ ...profileData, about });
@@ -159,6 +207,60 @@ export default function StudentProfileEditor({ profileData, handleSaveProfileInf
         <p className="text-body-md text-on-surface-variant whitespace-pre-line leading-relaxed">
           {profileData.about || "Add a summary to highlight your personality or work experience."}
         </p>
+      </motion.div>
+
+      {/* Resume Section */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
+        <div className="flex justify-between items-center mb-4 border-b border-outline-variant pb-3">
+          <h2 className="font-title-lg font-bold text-on-surface">Resume</h2>
+          <div>
+            <input 
+              type="file" 
+              id="resume-upload" 
+              className="hidden" 
+              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={handleResumeUpload}
+              disabled={isUploading}
+            />
+            <label htmlFor="resume-upload" className="cursor-pointer bg-primary text-white font-label-md px-4 py-2 rounded-full hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-1">
+              <span className="material-symbols-outlined text-sm">upload_file</span>
+              {profileData.resumeUrl ? 'Update Resume' : 'Upload Resume'}
+            </label>
+          </div>
+        </div>
+        
+        {isUploading && (
+          <div className="mb-4">
+            <div className="flex justify-between text-label-sm text-on-surface-variant mb-1">
+              <span>Uploading...</span>
+              <span>{uploadProgress}%</span>
+            </div>
+            <div className="w-full bg-surface-container-highest rounded-full h-2 overflow-hidden">
+              <div className="bg-primary h-2 transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+            </div>
+          </div>
+        )}
+
+        {profileData.resumeUrl ? (
+          <div className="flex items-center justify-between p-4 bg-surface-container-low border border-outline-variant rounded-lg">
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary text-3xl">picture_as_pdf</span>
+              <div>
+                <p className="font-label-md text-on-surface">{profileData.resumeName || 'Resume.pdf'}</p>
+                <a href={profileData.resumeUrl} target="_blank" rel="noreferrer" className="text-body-sm text-primary hover:underline">View Document</a>
+              </div>
+            </div>
+            <button 
+              onClick={() => handleSaveProfileInfo({ ...profileData, resumeUrl: null, resumeName: null })}
+              className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+              title="Delete Resume"
+            >
+              <span className="material-symbols-outlined text-[20px]">delete</span>
+            </button>
+          </div>
+        ) : (
+          <p className="text-body-md text-outline">No resume uploaded. Upload a PDF or DOC file to quickly apply for jobs.</p>
+        )}
       </motion.div>
 
       {/* Experience Section */}
