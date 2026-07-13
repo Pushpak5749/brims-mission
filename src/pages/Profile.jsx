@@ -19,6 +19,8 @@ export default function Profile() {
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [statusError, setStatusError] = useState("");
+  const [showStatusConfirmModal, setShowStatusConfirmModal] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState(null);
 
   // Calculate cooldown
   const now = Date.now();
@@ -34,7 +36,7 @@ export default function Profile() {
     }
   }
 
-  const handleStatusChange = async (newStatus) => {
+  const handleStatusChange = (newStatus) => {
     if (newStatus === profileData.status) return; // No change
     
     if (isOnCooldown) {
@@ -43,12 +45,22 @@ export default function Profile() {
     }
     
     setStatusError("");
+    setPendingStatus(newStatus);
+    setShowStatusConfirmModal(true);
+  };
+
+  const confirmStatusChange = async () => {
+    if (!pendingStatus) return;
     try {
-      await handleSaveProfileInfo({ ...profileData, status: newStatus });
+      await handleSaveProfileInfo({ ...profileData, status: pendingStatus });
+      setShowStatusConfirmModal(false);
+      setPendingStatus(null);
     } catch (e) {
       if (e.message === "COOLDOWN_ACTIVE") {
         setStatusError("You can only change your status once a week.");
       }
+      setShowStatusConfirmModal(false);
+      setPendingStatus(null);
     }
   };
 
@@ -93,6 +105,45 @@ export default function Profile() {
                 <span className="material-symbols-outlined text-[20px]">edit</span>
               </button>
             </div>
+            
+            {/* Status Confirmation Modal */}
+            <AnimatePresence>
+              {showStatusConfirmModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }} 
+                    animate={{ opacity: 1, scale: 1 }} 
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col"
+                  >
+                    <div className="p-6">
+                      <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <span className="material-symbols-outlined text-2xl">warning</span>
+                      </div>
+                      <h2 className="font-headline-sm font-bold text-gray-900 text-center mb-2">Confirm Status Change</h2>
+                      <p className="text-body-md text-gray-600 text-center mb-6">
+                        Are you sure you want to change your status to <strong>{pendingStatus === 'searching' ? 'Searching for Job' : 'Actively Hiring'}</strong>?<br/><br/>
+                        Once confirmed, this status will be locked and you will not be able to change it again for <strong>7 days</strong>.
+                      </p>
+                      <div className="flex gap-3">
+                        <button 
+                          onClick={() => { setShowStatusConfirmModal(false); setPendingStatus(null); }}
+                          className="flex-1 px-4 py-2 rounded-full border border-outline font-label-md text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button 
+                          onClick={confirmStatusChange}
+                          className="flex-1 px-4 py-2 rounded-full bg-primary font-label-md text-white hover:bg-primary/90 transition-colors"
+                        >
+                          Confirm & Lock
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
             
             {/* Profile Header Details */}
             <div className="px-6 pb-6 relative">
