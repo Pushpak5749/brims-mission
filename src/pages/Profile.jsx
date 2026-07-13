@@ -76,7 +76,7 @@ export default function Profile() {
       location: currentUser.location || 'United States',
       university: currentUser.university || 'University',
       skills: currentUser.skills || ['Communication', 'Teamwork'],
-      status: currentUser.status || 'searching'
+      status: currentUser.status || ''
     });
   }, [currentUser, navigate]);
 
@@ -229,21 +229,23 @@ export default function Profile() {
             </div>
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}
-            className={`border rounded-xl p-6 shadow-sm relative overflow-hidden group ${profileData.status === 'searching' ? 'bg-blue-50/50 border-primary/20' : 'bg-green-50/50 border-green-600/20'}`}
-          >
-            <h2 className={`font-label-lg font-bold mb-1 ${profileData.status === 'searching' ? 'text-primary' : 'text-[#2E7D32]'}`}>
-              {profileData.status === 'searching' ? 'Open to work' : 'Actively Hiring'}
-            </h2>
-            <p className="text-body-sm text-gray-800">
-              {profileData.status === 'searching' 
-                ? 'Your profile will be shown in the Discover page to recruiters.' 
-                : 'Your profile will be shown in the Network page for students to find.'}
-            </p>
-          </motion.div>
+          {profileData.status && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}
+              className={`border rounded-xl p-6 shadow-sm relative overflow-hidden group ${profileData.status === 'searching' ? 'bg-blue-50/50 border-primary/20' : 'bg-green-50/50 border-green-600/20'}`}
+            >
+              <h2 className={`font-label-lg font-bold mb-1 ${profileData.status === 'searching' ? 'text-primary' : 'text-[#2E7D32]'}`}>
+                {profileData.status === 'searching' ? 'Open to work' : 'Actively Hiring'}
+              </h2>
+              <p className="text-body-sm text-gray-800">
+                {profileData.status === 'searching' 
+                  ? 'Your profile will be shown in the Discover page to recruiters.' 
+                  : 'Your profile will be shown in the Network page for students to find.'}
+              </p>
+            </motion.div>
+          )}
 
-          {(!profileData.status || profileData.status === 'searching') && (
+          {profileData.status === 'searching' && (
             <StudentProfileEditor 
               profileData={profileData} 
               handleSaveProfileInfo={handleSaveProfileInfo} 

@@ -126,18 +126,20 @@ export default function ViewProfile() {
             </div>
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}
-            className={`border rounded-xl p-6 shadow-sm relative overflow-hidden group ${(!profileData.status || profileData.status === 'searching') ? 'bg-blue-50/50 border-primary/20' : 'bg-green-50/50 border-green-600/20'}`}
-          >
-            <h2 className={`font-label-lg font-bold mb-1 ${(!profileData.status || profileData.status === 'searching') ? 'text-primary' : 'text-[#2E7D32]'}`}>
-              {(!profileData.status || profileData.status === 'searching') ? 'Open to work' : 'Actively Hiring'}
-            </h2>
-            <p className="text-body-sm text-gray-800">Greater Delhi Area · On-site · Hybrid · Remote</p>
-          </motion.div>
+          {profileData.status && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}
+              className={`border rounded-xl p-6 shadow-sm relative overflow-hidden group ${profileData.status === 'searching' ? 'bg-blue-50/50 border-primary/20' : 'bg-green-50/50 border-green-600/20'}`}
+            >
+              <h2 className={`font-label-lg font-bold mb-1 ${profileData.status === 'searching' ? 'text-primary' : 'text-[#2E7D32]'}`}>
+                {profileData.status === 'searching' ? 'Open to work' : 'Actively Hiring'}
+              </h2>
+              <p className="text-body-sm text-gray-800">Greater Delhi Area · On-site · Hybrid · Remote</p>
+            </motion.div>
+          )}
 
           {/* About Section */}
-          {(profileData.about || (!profileData.status || profileData.status === 'searching')) && (
+          {(profileData.about || profileData.status === 'searching') && (
             <motion.div 
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}
               className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
