@@ -2,9 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 export default function TopAppBar() {
   const { currentUser, logout } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -34,11 +36,19 @@ export default function TopAppBar() {
 
 
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant focus:outline-none flex items-center justify-center"
+          aria-label="Toggle Dark Mode"
+        >
+          <span className="material-symbols-outlined text-[22px]">
+            {isDarkMode ? 'dark_mode' : 'light_mode'}
+          </span>
+        </button>
 
-        
         {currentUser ? (
-          <div className="flex items-center gap-3 relative ml-2" ref={menuRef}>
+          <div className="flex items-center gap-3 relative ml-1" ref={menuRef}>
             <div className="hidden md:flex flex-col items-end mr-1">
               <span className="font-label-md text-on-surface font-medium leading-tight">{currentUser.displayName}</span>
               <span className="text-[10px] uppercase font-bold text-primary mt-0.5">
