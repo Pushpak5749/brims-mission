@@ -107,11 +107,11 @@ export default function Profile() {
         <div className="lg:col-span-8 space-y-gutter">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-            className="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm"
+            className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm"
           >
             {/* Cover Photo */}
             <div className="h-48 bg-gradient-to-r from-primary via-[#005582] to-secondary relative">
-              <button className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 backdrop-blur-md p-2 rounded-full text-white transition-colors">
+              <button className="absolute top-4 right-4 bg-surface-container-lowest/20 hover:bg-surface-container-lowest/30 backdrop-blur-md p-2 rounded-full text-white transition-colors">
                 <span className="material-symbols-outlined text-[20px]">edit</span>
               </button>
             </div>
@@ -124,21 +124,21 @@ export default function Profile() {
                     initial={{ opacity: 0, scale: 0.95 }} 
                     animate={{ opacity: 1, scale: 1 }} 
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col"
+                    className="bg-surface-container-lowest rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col"
                   >
                     <div className="p-6">
                       <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4 mx-auto">
                         <span className="material-symbols-outlined text-2xl">warning</span>
                       </div>
-                      <h2 className="font-headline-sm font-bold text-gray-900 text-center mb-2">Confirm Status Change</h2>
-                      <p className="text-body-md text-gray-600 text-center mb-6">
+                      <h2 className="font-headline-sm font-bold text-on-surface text-center mb-2">Confirm Status Change</h2>
+                      <p className="text-body-md text-on-surface-variant text-center mb-6">
                         Are you sure you want to change your status to <strong>{pendingStatus === 'searching' ? 'Searching for Job' : 'Actively Hiring'}</strong>?<br/><br/>
                         Once confirmed, this status will be locked and you will not be able to change it again for <strong>7 days</strong>.
                       </p>
                       <div className="flex gap-3">
                         <button 
                           onClick={() => { setShowStatusConfirmModal(false); setPendingStatus(null); }}
-                          className="flex-1 px-4 py-2 rounded-full border border-outline font-label-md text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="flex-1 px-4 py-2 rounded-full border border-outline font-label-md text-on-surface-variant hover:bg-surface-container-lowest transition-colors"
                         >
                           Cancel
                         </button>
@@ -160,7 +160,7 @@ export default function Profile() {
               <div className="flex justify-between items-start">
                 <div 
                   onClick={() => setIsPhotoModalOpen(true)}
-                  className="w-32 h-32 rounded-full border-4 border-white overflow-hidden bg-surface shadow-md -mt-16 relative group cursor-pointer"
+                  className="w-32 h-32 rounded-full border-4 border-surface-container-lowest overflow-hidden bg-surface shadow-md -mt-16 relative group cursor-pointer"
                 >
                   <img 
                     className="w-full h-full object-cover" 
@@ -183,11 +183,11 @@ export default function Profile() {
 
               <div className="mt-4 flex flex-col md:flex-row justify-between items-start gap-4">
                 <div>
-                  <h1 className="font-headline-md text-headline-md font-bold text-gray-900 flex items-center gap-2">
+                  <h1 className="font-headline-md text-headline-md font-bold text-on-surface flex items-center gap-2">
                     {profileData.name}
                     <span className="text-body-sm font-normal text-on-surface-variant px-2 bg-surface-container rounded-full">He/Him</span>
                   </h1>
-                  <p className="font-body-lg text-gray-800 mt-1 max-w-md">{profileData.role}</p>
+                  <p className="font-body-lg text-on-surface mt-1 max-w-md">{profileData.role}</p>
                   <p className="font-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
                     {profileData.location} <span className="font-bold text-primary mx-1">·</span> 
                     <a href="#" className="font-bold text-primary hover:underline">Contact info</a>
@@ -230,7 +230,7 @@ export default function Profile() {
                   </p>
                 )}
                 {isOnCooldown && !statusError && (
-                  <p className="text-[12px] text-gray-500 mt-1 flex items-center gap-1">
+                  <p className="text-[12px] text-outline mt-1 flex items-center gap-1">
                     <span className="material-symbols-outlined text-[14px]">info</span>
                     Status locked for {cooldownDays} more day(s)
                   </p>
@@ -247,7 +247,7 @@ export default function Profile() {
               <h2 className={`font-label-lg font-bold mb-1 ${profileData.status === 'searching' ? 'text-primary' : 'text-[#2E7D32]'}`}>
                 {profileData.status === 'searching' ? 'Open to work' : 'Actively Hiring'}
               </h2>
-              <p className="text-body-sm text-gray-800">
+              <p className="text-body-sm text-on-surface">
                 {profileData.status === 'searching' 
                   ? 'Your profile will be shown in the Discover page to recruiters.' 
                   : 'Your profile will be shown in the Network page for students to find.'}
@@ -274,16 +274,16 @@ export default function Profile() {
         <div className="hidden lg:block lg:col-span-4 space-y-gutter">
           <motion.div 
             initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.1 }}
-            className="bg-white border border-outline-variant rounded-xl p-4 shadow-sm"
+            className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm"
           >
             <div className="flex justify-between items-center mb-4 border-b border-outline-variant pb-2">
-              <h3 className="font-label-md font-bold text-gray-900">Profile Language</h3>
+              <h3 className="font-label-md font-bold text-on-surface">Profile Language</h3>
               <span className="material-symbols-outlined text-on-surface-variant text-lg">edit</span>
             </div>
             
             <div className="flex justify-between items-center mb-4 border-b border-outline-variant pb-2">
               <div>
-                <h3 className="font-label-md font-bold text-gray-900">Public profile & URL</h3>
+                <h3 className="font-label-md font-bold text-on-surface">Public profile & URL</h3>
                 <p className="text-body-sm text-on-surface-variant mt-1 truncate max-w-[200px]">www.brimsmission.com/in/{profileData.name.toLowerCase().replace(/\s+/g, '-')}</p>
               </div>
               <span className="material-symbols-outlined text-on-surface-variant text-lg">edit</span>
@@ -292,18 +292,18 @@ export default function Profile() {
           
           <motion.div 
             initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.2 }}
-            className="bg-white border border-outline-variant rounded-xl p-4 shadow-sm"
+            className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm"
           >
-            <h3 className="font-headline-sm font-bold text-gray-900 mb-4">Who your viewers also viewed</h3>
+            <h3 className="font-headline-sm font-bold text-on-surface mb-4">Who your viewers also viewed</h3>
             <div className="space-y-4">
               <div className="flex gap-3">
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high shrink-0">
                   <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=0D8ABC&color=fff" alt="User" />
                 </div>
                 <div>
-                  <h4 className="font-label-md font-bold text-gray-900 hover:text-primary hover:underline cursor-pointer">Jane Doe</h4>
-                  <p className="text-body-sm text-gray-600 line-clamp-2">Founder in the IT Services and IT Consulting industry...</p>
-                  <button className="mt-2 border border-outline-variant text-gray-700 font-label-md px-4 py-1 rounded-full hover:bg-surface-container-low transition-colors">
+                  <h4 className="font-label-md font-bold text-on-surface hover:text-primary hover:underline cursor-pointer">Jane Doe</h4>
+                  <p className="text-body-sm text-on-surface-variant line-clamp-2">Founder in the IT Services and IT Consulting industry...</p>
+                  <button className="mt-2 border border-outline-variant text-on-surface-variant font-label-md px-4 py-1 rounded-full hover:bg-surface-container-low transition-colors">
                     View
                   </button>
                 </div>
@@ -313,9 +313,9 @@ export default function Profile() {
                   <img src="https://ui-avatars.com/api/?name=Sam+Smith&background=E53935&color=fff" alt="User" />
                 </div>
                 <div>
-                  <h4 className="font-label-md font-bold text-gray-900 hover:text-primary hover:underline cursor-pointer">Sam Smith</h4>
-                  <p className="text-body-sm text-gray-600 line-clamp-2">Someone in the Graphic Design industry from...</p>
-                  <button className="mt-2 border border-outline-variant text-gray-700 font-label-md px-4 py-1 rounded-full hover:bg-surface-container-low transition-colors">
+                  <h4 className="font-label-md font-bold text-on-surface hover:text-primary hover:underline cursor-pointer">Sam Smith</h4>
+                  <p className="text-body-sm text-on-surface-variant line-clamp-2">Someone in the Graphic Design industry from...</p>
+                  <button className="mt-2 border border-outline-variant text-on-surface-variant font-label-md px-4 py-1 rounded-full hover:bg-surface-container-low transition-colors">
                     View
                   </button>
                 </div>

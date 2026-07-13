@@ -72,26 +72,26 @@ export default function ProfilePhotoModal({ isOpen, onClose }) {
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col"
+            className="bg-surface-container-lowest rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col"
           >
             <div className="p-4 border-b border-outline-variant flex justify-between items-center">
-              <h2 className="font-headline-sm font-bold text-gray-900">Profile Photo</h2>
-              <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
-                <span className="material-symbols-outlined text-gray-600">close</span>
+              <h2 className="font-headline-sm font-bold text-on-surface">Profile Photo</h2>
+              <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center transition-colors">
+                <span className="material-symbols-outlined text-on-surface-variant">close</span>
               </button>
             </div>
 
             <div className="p-6 flex flex-col items-center flex-grow bg-surface-container-lowest">
               {!imageFile ? (
                 <div className="flex flex-col items-center">
-                  <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-lg mb-6 relative group">
+                  <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-surface-container-lowest shadow-lg mb-6 relative group">
                     <img src={currentImgSrc} alt="Current" className="w-full h-full object-cover" />
                   </div>
-                  <p className="text-body-sm text-gray-500 text-center mb-6">Your profile photo helps other professionals recognize you.</p>
+                  <p className="text-body-sm text-outline text-center mb-6">Your profile photo helps other professionals recognize you.</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center w-full">
-                  <div className="border border-outline-variant rounded-lg overflow-hidden bg-gray-50 p-4 mb-4 flex justify-center w-full">
+                  <div className="border border-outline-variant rounded-lg overflow-hidden bg-surface-container-lowest p-4 mb-4 flex justify-center w-full">
                     <AvatarEditor
                       ref={editorRef}
                       image={imageFile}
@@ -112,7 +112,7 @@ export default function ProfilePhotoModal({ isOpen, onClose }) {
                   
                   <div className="w-full space-y-4">
                     <div>
-                      <label className="text-label-sm font-bold text-gray-700 mb-1 block">Zoom</label>
+                      <label className="text-label-sm font-bold text-on-surface-variant mb-1 block">Zoom</label>
                       <input 
                         type="range" 
                         min="1" max="3" step="0.01" 
@@ -123,13 +123,13 @@ export default function ProfilePhotoModal({ isOpen, onClose }) {
                     </div>
                     
                     <div>
-                      <label className="text-label-sm font-bold text-gray-700 mb-2 block">Filters</label>
+                      <label className="text-label-sm font-bold text-on-surface-variant mb-2 block">Filters</label>
                       <div className="flex gap-2">
                         {['none', 'grayscale', 'sepia', 'contrast'].map(f => (
                           <button 
                             key={f}
                             onClick={() => setFilter(f)}
-                            className={`px-3 py-1 rounded-full text-[12px] font-bold capitalize transition-colors ${filter === f ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                            className={`px-3 py-1 rounded-full text-[12px] font-bold capitalize transition-colors ${filter === f ? 'bg-primary text-white' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container'}`}
                           >
                             {f}
                           </button>
@@ -141,7 +141,7 @@ export default function ProfilePhotoModal({ isOpen, onClose }) {
               )}
             </div>
 
-            <div className="p-4 border-t border-outline-variant bg-gray-50 flex justify-between items-center gap-2">
+            <div className="p-4 border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center gap-2">
               {!imageFile ? (
                 <>
                   <div className="flex gap-2">
@@ -156,7 +156,7 @@ export default function ProfilePhotoModal({ isOpen, onClose }) {
                 </>
               ) : (
                 <>
-                  <button onClick={() => setImageFile(null)} className="font-label-md px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-full transition-colors">
+                  <button onClick={() => setImageFile(null)} className="font-label-md px-4 py-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
                     Cancel
                   </button>
                   <button onClick={handleSave} className="bg-primary text-white font-label-md px-6 py-2 rounded-full hover:bg-primary/90 transition-colors shadow-sm">

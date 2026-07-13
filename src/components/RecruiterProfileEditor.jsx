@@ -39,7 +39,7 @@ export default function RecruiterProfileEditor({ profileData, handleSaveProfileI
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-          className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
+          className="bg-surface-container-lowest rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
         >
           <div className="px-6 py-4 border-b border-outline-variant flex justify-between items-center bg-surface sticky top-0 z-10">
             <h2 className="font-headline-sm font-bold text-on-surface">
@@ -109,44 +109,44 @@ export default function RecruiterProfileEditor({ profileData, handleSaveProfileI
   return (
     <div className="space-y-6">
       {/* About Section */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
         <div className="flex justify-between items-center mb-4 border-b border-outline-variant pb-3">
-          <h2 className="font-title-lg font-bold text-gray-900">Recruiter Bio</h2>
+          <h2 className="font-title-lg font-bold text-on-surface">Recruiter Bio</h2>
           <button onClick={() => setEditingSection('about')} className="p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant transition-colors">
             <span className="material-symbols-outlined">edit</span>
           </button>
         </div>
-        <p className="text-body-md text-gray-700 whitespace-pre-line leading-relaxed">
+        <p className="text-body-md text-on-surface-variant whitespace-pre-line leading-relaxed">
           {profileData.about || "Add a summary to highlight your role and what kind of talent you're looking for."}
         </p>
       </motion.div>
 
       {/* Job Postings Section */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
         <div className="flex justify-between items-center mb-4 border-b border-outline-variant pb-3">
-          <h2 className="font-title-lg font-bold text-gray-900">Active Job Postings</h2>
+          <h2 className="font-title-lg font-bold text-on-surface">Active Job Postings</h2>
           <button onClick={() => setEditingSection('jobPosts')} className="p-2 rounded-full bg-green-50 text-green-700 hover:bg-green-100 transition-colors flex items-center gap-1 font-label-md">
             <span className="material-symbols-outlined text-sm">add</span> Add Job
           </button>
         </div>
         
         {jobPosts.length === 0 ? (
-          <p className="text-body-md text-gray-500 text-center py-6">You haven't posted any jobs yet. Students will not see an empty list.</p>
+          <p className="text-body-md text-outline text-center py-6">You haven't posted any jobs yet. Students will not see an empty list.</p>
         ) : (
           <div className="space-y-6">
             {jobPosts.map((job, index) => (
               <div key={index} className="flex flex-col md:flex-row gap-4 relative group border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow bg-surface-container-low">
-                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
+                <div className="w-12 h-12 bg-surface-container-lowest rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
                   <span className="material-symbols-outlined text-primary">work</span>
                 </div>
                 <div className="grow">
-                  <h3 className="font-title-md font-bold text-gray-900">{job.title}</h3>
-                  <p className="font-body-md text-gray-800 font-medium mt-1">{job.company}</p>
-                  <div className="flex flex-wrap items-center gap-2 mt-2 text-body-sm text-gray-600">
+                  <h3 className="font-title-md font-bold text-on-surface">{job.title}</h3>
+                  <p className="font-body-md text-on-surface font-medium mt-1">{job.company}</p>
+                  <div className="flex flex-wrap items-center gap-2 mt-2 text-body-sm text-on-surface-variant">
                     <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">location_on</span> {job.location || 'Remote'}</span>
                     <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">schedule</span> {job.type || 'Full-time'}</span>
                   </div>
-                  {job.description && <p className="mt-3 text-body-sm text-gray-700 whitespace-pre-line leading-relaxed line-clamp-3">{job.description}</p>}
+                  {job.description && <p className="mt-3 text-body-sm text-on-surface-variant whitespace-pre-line leading-relaxed line-clamp-3">{job.description}</p>}
                 </div>
                 <button onClick={() => deleteJobPost(index)} className="absolute right-2 top-2 p-2 rounded-full hover:bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="material-symbols-outlined text-sm">delete</span>

@@ -32,16 +32,16 @@ export default function Jobs() {
   const extraSidebarLinks = (
     <div className="flex flex-col">
       <div className="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors border-b border-outline-variant/50">
-        <span className="material-symbols-outlined text-gray-600">list</span>
-        <span className="font-label-md text-gray-900 font-bold">Preferences</span>
+        <span className="material-symbols-outlined text-on-surface-variant">list</span>
+        <span className="font-label-md text-on-surface font-bold">Preferences</span>
       </div>
       <div className="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors border-b border-outline-variant/50">
-        <span className="material-symbols-outlined text-gray-600">bookmark</span>
-        <span className="font-label-md text-gray-900 font-bold">Job tracker</span>
+        <span className="material-symbols-outlined text-on-surface-variant">bookmark</span>
+        <span className="font-label-md text-on-surface font-bold">Job tracker</span>
       </div>
       <div className="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors border-b border-outline-variant/50">
         <span className="material-symbols-outlined text-yellow-600">insights</span>
-        <span className="font-label-md text-gray-900 font-bold">My Career Insights</span>
+        <span className="font-label-md text-on-surface font-bold">My Career Insights</span>
       </div>
       <div className="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors">
         <span className="material-symbols-outlined text-primary">edit_square</span>
@@ -64,15 +64,15 @@ export default function Jobs() {
           
           <motion.div 
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm"
+            className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm"
           >
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h2 className="font-label-lg font-bold text-gray-900">Jobs based on your preferences</h2>
-                <p className="text-body-sm text-gray-600">Full-time Founder, on-site or hybrid or remote in Greater Delhi Area</p>
+                <h2 className="font-label-lg font-bold text-on-surface">Jobs based on your preferences</h2>
+                <p className="text-body-sm text-on-surface-variant">Full-time Founder, on-site or hybrid or remote in Greater Delhi Area</p>
               </div>
               <button className="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center transition-colors border border-outline">
-                <span className="material-symbols-outlined text-[18px] text-gray-600">edit</span>
+                <span className="material-symbols-outlined text-[18px] text-on-surface-variant">edit</span>
               </button>
             </div>
 
@@ -87,7 +87,7 @@ export default function Jobs() {
           </motion.div>
 
           {/* Job Feed */}
-          <div className="bg-white border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
             {loading ? (
               <div className="flex justify-center items-center h-48">
                 <span className="material-symbols-outlined animate-spin text-primary text-4xl">refresh</span>
@@ -103,12 +103,12 @@ export default function Jobs() {
                   <div className="grow">
                     <div className="flex justify-between items-start">
                       <h3 className="font-label-lg font-bold text-primary group-hover:underline">{job.title}</h3>
-                      <button className="text-gray-400 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button className="text-outline-variant hover:text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">
                         <span className="material-symbols-outlined">close</span>
                       </button>
                     </div>
-                    <p className="text-body-sm text-gray-900 font-bold">{job.company}</p>
-                    <p className="text-body-sm text-gray-600 mb-1">{job.location}</p>
+                    <p className="text-body-sm text-on-surface font-bold">{job.company}</p>
+                    <p className="text-body-sm text-on-surface-variant mb-1">{job.location}</p>
                     
                     {job.reviewing && (
                       <div className="flex items-center gap-1 text-[#2E7D32] mb-1">
@@ -118,8 +118,8 @@ export default function Jobs() {
                     )}
                     
                     <div className="flex items-center gap-3 mt-1">
-                      {job.promoted && <span className="text-[10px] text-gray-500">Promoted</span>}
-                      <span className="flex items-center gap-1 text-[12px] text-gray-900 font-bold">
+                      {job.promoted && <span className="text-[10px] text-outline">Promoted</span>}
+                      <span className="flex items-center gap-1 text-[12px] text-on-surface font-bold">
                         <span className="material-symbols-outlined text-[14px]">work</span> Easy Apply
                       </span>
                     </div>
@@ -129,10 +129,10 @@ export default function Jobs() {
             ) : (
               <div className="p-12 text-center">
                 <div className="w-16 h-16 bg-surface-container-low rounded-full flex items-center justify-center mx-auto mb-4 border border-outline">
-                  <span className="material-symbols-outlined text-3xl text-gray-400">work_off</span>
+                  <span className="material-symbols-outlined text-3xl text-outline-variant">work_off</span>
                 </div>
-                <h3 className="font-label-lg font-bold text-gray-900 mb-2">No jobs posted yet</h3>
-                <p className="text-body-md text-gray-600 max-w-sm mx-auto mb-6">
+                <h3 className="font-label-lg font-bold text-on-surface mb-2">No jobs posted yet</h3>
+                <p className="text-body-md text-on-surface-variant max-w-sm mx-auto mb-6">
                   Check back soon! When recruiters post new positions, they will show up right here in your feed.
                 </p>
                 <button className="bg-primary text-white font-label-md px-6 py-2 rounded-full hover:bg-primary/90 transition-colors shadow-sm">

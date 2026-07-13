@@ -82,7 +82,7 @@ export default function Login() {
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-          className="w-full max-w-sm bg-white p-base rounded-xl border border-outline-variant shadow-sm"
+          className="w-full max-w-sm bg-surface-container-lowest p-base rounded-xl border border-outline-variant shadow-sm"
         >
           <form className="space-y-6 p-4" onSubmit={handleEmailSubmit}>
             {errorMsg && (

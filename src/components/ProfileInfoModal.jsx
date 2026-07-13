@@ -41,21 +41,21 @@ export default function ProfileInfoModal({ isOpen, onClose, initialData, onSave 
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            className="bg-surface-container-lowest rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
           >
             <div className="p-4 border-b border-outline-variant flex justify-between items-center bg-surface">
-              <h2 className="font-headline-sm font-bold text-gray-900">Edit Intro</h2>
-              <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
-                <span className="material-symbols-outlined text-gray-600">close</span>
+              <h2 className="font-headline-sm font-bold text-on-surface">Edit Intro</h2>
+              <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center transition-colors">
+                <span className="material-symbols-outlined text-on-surface-variant">close</span>
               </button>
             </div>
 
             <div className="p-6 overflow-y-auto">
-              <p className="text-body-sm text-gray-500 mb-6">* Indicates required</p>
+              <p className="text-body-sm text-outline mb-6">* Indicates required</p>
               
               <form id="profileInfoForm" onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="text-label-md font-bold text-gray-700 mb-1 block">Full Name *</label>
+                  <label className="text-label-md font-bold text-on-surface-variant mb-1 block">Full Name *</label>
                   <input 
                     type="text" 
                     name="name"
@@ -67,7 +67,7 @@ export default function ProfileInfoModal({ isOpen, onClose, initialData, onSave 
                 </div>
                 
                 <div>
-                  <label className="text-label-md font-bold text-gray-700 mb-1 block">Headline *</label>
+                  <label className="text-label-md font-bold text-on-surface-variant mb-1 block">Headline *</label>
                   <textarea 
                     name="role"
                     required
@@ -79,7 +79,7 @@ export default function ProfileInfoModal({ isOpen, onClose, initialData, onSave 
                 </div>
 
                 <div>
-                  <label className="text-label-md font-bold text-gray-700 mb-1 block">Current University / Company</label>
+                  <label className="text-label-md font-bold text-on-surface-variant mb-1 block">Current University / Company</label>
                   <input 
                     type="text" 
                     name="university"
@@ -90,7 +90,7 @@ export default function ProfileInfoModal({ isOpen, onClose, initialData, onSave 
                 </div>
 
                 <div>
-                  <label className="text-label-md font-bold text-gray-700 mb-1 block">Location</label>
+                  <label className="text-label-md font-bold text-on-surface-variant mb-1 block">Location</label>
                   <input 
                     type="text" 
                     name="location"
@@ -103,7 +103,7 @@ export default function ProfileInfoModal({ isOpen, onClose, initialData, onSave 
             </div>
 
             <div className="p-4 border-t border-outline-variant bg-surface flex justify-end gap-2">
-              <button onClick={onClose} className="font-label-md px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+              <button onClick={onClose} className="font-label-md px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">
                 Cancel
               </button>
               <button type="submit" form="profileInfoForm" className="bg-primary text-white font-label-md px-6 py-2 rounded-full hover:bg-primary/90 transition-colors shadow-sm">

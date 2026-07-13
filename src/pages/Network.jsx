@@ -43,8 +43,8 @@ export default function Network() {
         {/* Main Content Area */}
         <div className="lg:col-span-9">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-            <h1 className="font-display-sm text-gray-900 mb-2">Connect with Recruiters</h1>
-            <p className="text-body-sm text-gray-600">Find people who are actively hiring and looking for talent like you.</p>
+            <h1 className="font-display-sm text-on-surface mb-2">Connect with Recruiters</h1>
+            <p className="text-body-sm text-on-surface-variant">Find people who are actively hiring and looking for talent like you.</p>
           </motion.div>
 
           {loading ? (
@@ -57,7 +57,7 @@ export default function Network() {
                 <motion.div 
                   key={recruiter.id}
                   initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
-                  className="bg-white border border-outline-variant rounded-xl flex flex-col p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  className="bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                   onClick={() => navigate(`/profile/view/${recruiter.id}`)}
                 >
                   <div className="flex flex-col items-center mb-3 relative">
@@ -65,14 +65,14 @@ export default function Network() {
                       HIRING
                     </div>
                     <img className="w-20 h-20 rounded-full object-cover border-2 border-gray-100 shadow-sm mb-2" src={recruiter.photoURL || "https://ui-avatars.com/api/?name=User"} alt={recruiter.displayName} />
-                    <h4 className="font-label-md font-bold text-gray-900 text-center">{recruiter.displayName}</h4>
-                    <p className="font-body-sm text-gray-500 text-center line-clamp-1">{recruiter.role}</p>
+                    <h4 className="font-label-md font-bold text-on-surface text-center">{recruiter.displayName}</h4>
+                    <p className="font-body-sm text-outline text-center line-clamp-1">{recruiter.role}</p>
                   </div>
                   
                   <div className="grow mb-4 flex justify-center">
                     <div className="flex gap-1 flex-wrap justify-center">
                       {(recruiter.skills || []).slice(0,3).map(tag => (
-                        <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded">{tag}</span>
+                        <span key={tag} className="px-2 py-0.5 bg-surface-container-low text-on-surface-variant text-[10px] rounded">{tag}</span>
                       ))}
                     </div>
                   </div>
@@ -85,11 +85,11 @@ export default function Network() {
             </div>
           ) : (
             <div className="bg-surface-container-low rounded-xl p-12 text-center border border-outline-variant border-dashed">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                <span className="material-symbols-outlined text-3xl text-gray-400">work_history</span>
+              <div className="w-16 h-16 bg-surface-container-lowest rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <span className="material-symbols-outlined text-3xl text-outline-variant">work_history</span>
               </div>
-              <h3 className="font-label-lg font-bold text-gray-900 mb-2">No recruiters found</h3>
-              <p className="text-body-md text-gray-600 max-w-sm mx-auto">
+              <h3 className="font-label-lg font-bold text-on-surface mb-2">No recruiters found</h3>
+              <p className="text-body-md text-on-surface-variant max-w-sm mx-auto">
                 No users have set their status to "Hiring" yet. When they do, they will appear right here!
               </p>
             </div>

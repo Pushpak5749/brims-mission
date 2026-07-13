@@ -55,8 +55,8 @@ export default function Discover() {
         {/* Main Content Area */}
         <div className="lg:col-span-9">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-            <h1 className="font-display-sm text-gray-900 mb-2">Discover Students & Peers</h1>
-            <p className="text-body-sm text-gray-600">Connect with students and early professionals showcasing high-impact projects.</p>
+            <h1 className="font-display-sm text-on-surface mb-2">Discover Students & Peers</h1>
+            <p className="text-body-sm text-on-surface-variant">Connect with students and early professionals showcasing high-impact projects.</p>
           </motion.div>
 
           {loading ? (
@@ -69,7 +69,7 @@ export default function Discover() {
                 <motion.div 
                   key={portfolio.id}
                   initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
-                  className="bg-white border border-outline-variant rounded-xl flex flex-col p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer relative overflow-hidden"
+                  className="bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer relative overflow-hidden"
                   onClick={() => navigate(`/profile/view/${portfolio.id}`)}
                 >
                   <div className="absolute top-0 right-0 bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-bl-lg border-b border-l border-blue-200">
@@ -77,14 +77,14 @@ export default function Discover() {
                   </div>
                   <div className="flex flex-col items-center mb-3 mt-2">
                     <img className="w-20 h-20 rounded-full object-cover border-2 border-gray-100 shadow-sm mb-2" src={portfolio.photoURL || "https://ui-avatars.com/api/?name=User"} alt={portfolio.displayName} />
-                    <h4 className="font-label-md font-bold text-gray-900 text-center">{portfolio.displayName}</h4>
-                    <p className="font-body-sm text-gray-500 text-center line-clamp-1">{portfolio.role}</p>
+                    <h4 className="font-label-md font-bold text-on-surface text-center">{portfolio.displayName}</h4>
+                    <p className="font-body-sm text-outline text-center line-clamp-1">{portfolio.role}</p>
                   </div>
                   
                   <div className="grow mb-4 flex justify-center">
                     <div className="flex gap-1 flex-wrap justify-center">
                       {(portfolio.skills || []).slice(0, 3).map(tag => (
-                        <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded">{tag}</span>
+                        <span key={tag} className="px-2 py-0.5 bg-surface-container-low text-on-surface-variant text-[10px] rounded">{tag}</span>
                       ))}
                     </div>
                   </div>
@@ -97,11 +97,11 @@ export default function Discover() {
             </div>
           ) : (
             <div className="bg-surface-container-low rounded-xl p-12 text-center border border-outline-variant border-dashed">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                <span className="material-symbols-outlined text-3xl text-gray-400">group_off</span>
+              <div className="w-16 h-16 bg-surface-container-lowest rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <span className="material-symbols-outlined text-3xl text-outline-variant">group_off</span>
               </div>
-              <h3 className="font-label-lg font-bold text-gray-900 mb-2">No students found</h3>
-              <p className="text-body-md text-gray-600 max-w-sm mx-auto">
+              <h3 className="font-label-lg font-bold text-on-surface mb-2">No students found</h3>
+              <p className="text-body-md text-on-surface-variant max-w-sm mx-auto">
                 Be the first to join the network! Head over to your profile and set your status to "Searching for Job".
               </p>
             </div>
