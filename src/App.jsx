@@ -8,10 +8,13 @@ import Network from './pages/Network';
 import Jobs from './pages/Jobs';
 import Login from './pages/Login';
 import CreatePortfolio from './pages/CreatePortfolio';
+import ThemeToggle from './components/ThemeToggle';
 
 function App() {
   return (
-    <BrowserRouter>
+    <>
+      <ThemeToggle />
+      <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Layout />}>
@@ -24,6 +27,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </>
   );
 }
 
