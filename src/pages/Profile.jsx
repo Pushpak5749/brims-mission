@@ -70,13 +70,18 @@ export default function Profile() {
       return;
     }
 
+    // Fix for legacy default status: if it's 'searching' but they never explicitly updated it, reset it to '' locally
+    const effectiveStatus = (currentUser.status === 'searching' && !currentUser.statusLastUpdated) 
+      ? '' 
+      : (currentUser.status || '');
+
     setProfileData({
       name: currentUser.displayName || 'Demo User',
       role: currentUser.role || 'Aspiring Professional',
       location: currentUser.location || 'United States',
       university: currentUser.university || 'University',
       skills: currentUser.skills || ['Communication', 'Teamwork'],
-      status: currentUser.status || ''
+      status: effectiveStatus
     });
   }, [currentUser, navigate]);
 

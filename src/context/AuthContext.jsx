@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
           role: 'Student', // Default role
           location: '',
           university: '',
-          status: 'searching', // Default status: 'searching' or 'hiring'
+          status: '', // Changed to empty string so users must explicitly choose
           statusLastUpdated: 0, // Timestamp
           about: '',
           experience: [],

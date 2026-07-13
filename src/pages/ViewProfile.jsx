@@ -17,7 +17,11 @@ export default function ViewProfile() {
         const docSnap = await getDoc(docRef);
         
         if (docSnap.exists()) {
-          setProfileData(docSnap.data());
+          const data = docSnap.data();
+          if (data.status === 'searching' && !data.statusLastUpdated) {
+            data.status = '';
+          }
+          setProfileData(data);
         } else {
           setProfileData(null); // User not found
         }
