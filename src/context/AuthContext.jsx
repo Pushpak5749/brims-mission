@@ -38,7 +38,8 @@ export function AuthProvider({ children }) {
           about: '',
           experience: [],
           projects: [],
-          skills: []
+          skills: [],
+          jobPosts: []
         };
 
         if (userSnap.exists()) {

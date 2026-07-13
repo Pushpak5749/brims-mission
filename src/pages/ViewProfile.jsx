@@ -143,7 +143,7 @@ export default function ViewProfile() {
           )}
 
           {/* About Section */}
-          {(profileData.about || profileData.status === 'searching') && (
+          {(profileData.about || profileData.status === 'searching' || profileData.status === 'hiring') && (
             <motion.div 
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}
               className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
@@ -204,7 +204,7 @@ export default function ViewProfile() {
           )}
 
           {/* Skills Section */}
-          {profileData.skills && profileData.skills.length > 0 && (
+          {profileData.skills && profileData.skills.length > 0 && profileData.status === 'searching' && (
             <motion.div 
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}
               className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
@@ -215,6 +215,46 @@ export default function ViewProfile() {
                   <div key={index} className="px-3 py-1.5 bg-surface-container rounded-lg border border-outline-variant text-body-sm font-medium text-gray-800 flex items-center gap-2 shadow-sm">
                     <span className="material-symbols-outlined text-[16px] text-primary">verified</span>
                     {skill}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Job Postings Section (For Recruiters) */}
+          {profileData.status === 'hiring' && profileData.jobPosts && profileData.jobPosts.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25 }}
+              className="bg-white border border-outline-variant rounded-xl p-6 shadow-sm"
+            >
+              <h2 className="font-title-lg font-bold text-gray-900 mb-4 border-b border-outline-variant pb-3">Active Job Openings</h2>
+              <div className="space-y-6">
+                {profileData.jobPosts.map((job, index) => (
+                  <div key={index} className="flex flex-col md:flex-row gap-4 border border-outline-variant rounded-xl p-5 shadow-sm bg-surface-container-low hover:shadow-md transition-shadow">
+                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shrink-0 border border-outline-variant">
+                      <span className="material-symbols-outlined text-primary">work</span>
+                    </div>
+                    <div className="grow">
+                      <h3 className="font-title-md font-bold text-gray-900">{job.title}</h3>
+                      <p className="font-body-md text-gray-800 font-medium mt-1">{job.company}</p>
+                      <div className="flex flex-wrap items-center gap-3 mt-2 text-body-sm text-gray-600">
+                        <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">location_on</span> {job.location || 'Remote'}</span>
+                        <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">schedule</span> {job.type || 'Full-time'}</span>
+                      </div>
+                      {job.description && <p className="mt-3 text-body-sm text-gray-700 whitespace-pre-line leading-relaxed">{job.description}</p>}
+                    </div>
+                    {job.applyLink && (
+                      <div className="md:self-center shrink-0 mt-3 md:mt-0">
+                        <a 
+                          href={job.applyLink.startsWith('http') ? job.applyLink : `https://${job.applyLink}`} 
+                          target="_blank" 
+                          rel="noreferrer" 
+                          className="inline-block bg-[#2E7D32] text-white px-5 py-2 rounded-full font-label-md font-bold hover:bg-[#1B5E20] transition-colors whitespace-nowrap"
+                        >
+                          Apply Now
+                        </a>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

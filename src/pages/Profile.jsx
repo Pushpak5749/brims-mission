@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import ProfilePhotoModal from '../components/ProfilePhotoModal';
 import ProfileInfoModal from '../components/ProfileInfoModal';
 import StudentProfileEditor from '../components/StudentProfileEditor';
+import RecruiterProfileEditor from '../components/RecruiterProfileEditor';
 
 export default function Profile() {
   const { currentUser, updateProfileInfo } = useAuth();
@@ -81,6 +82,7 @@ export default function Profile() {
       location: currentUser.location || 'United States',
       university: currentUser.university || 'University',
       skills: currentUser.skills || ['Communication', 'Teamwork'],
+      jobPosts: currentUser.jobPosts || [],
       status: effectiveStatus
     });
   }, [currentUser, navigate]);
@@ -254,6 +256,13 @@ export default function Profile() {
             <StudentProfileEditor 
               profileData={profileData} 
               handleSaveProfileInfo={handleSaveProfileInfo} 
+            />
+          )}
+
+          {profileData.status === 'hiring' && (
+            <RecruiterProfileEditor
+              profileData={profileData}
+              handleSaveProfileInfo={handleSaveProfileInfo}
             />
           )}
         </div>
