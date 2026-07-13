@@ -42,11 +42,13 @@ export default function Login() {
 
   const handleGoogleClick = async () => {
     setIsLoggingIn(true);
+    setErrorMsg('');
     try {
       await loginWithGoogle();
       navigate('/');
     } catch (error) {
-      console.error("Failed to sign in:", error);
+      console.error("Failed to sign in with Google:", error);
+      setErrorMsg(error.message || "Failed to sign in with Google");
       setIsLoggingIn(false);
     }
   };
