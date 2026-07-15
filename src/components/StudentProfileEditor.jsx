@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { storage } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 
 export default function StudentProfileEditor({ profileData, handleSaveProfileInfo }) {
@@ -33,33 +31,57 @@ export default function StudentProfileEditor({ profileData, handleSaveProfileInf
 
     if (!currentUser) return;
 
-    const storageRef = ref(storage, `resumes/${currentUser.uid}_${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      alert("Cloudinary configuration is missing. Please add VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET to your environment variables.");
+      return;
+    }
 
     setIsUploading(true);
+    setUploadProgress(0);
 
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
+    // Optionally group them in a folder
+    formData.append('folder', 'resumes');
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, true);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const progress = Math.round((event.loaded / event.total) * 100);
         setUploadProgress(progress);
-      },
-      (error) => {
-        console.error("Resume upload failed:", error);
-        alert('Upload failed. Please try again.');
-        setIsUploading(false);
-      },
-      async () => {
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
         handleSaveProfileInfo({ 
           ...profileData, 
-          resumeUrl: downloadURL,
+          resumeUrl: response.secure_url,
           resumeName: file.name
         });
-        setIsUploading(false);
-        setUploadProgress(0);
+      } else {
+        console.error("Cloudinary upload failed:", xhr.responseText);
+        alert('Upload failed. Please check your Cloudinary configuration.');
       }
-    );
+      setIsUploading(false);
+      setUploadProgress(0);
+    };
+
+    xhr.onerror = () => {
+      console.error("Cloudinary upload network error");
+      alert('Upload failed due to a network error. Please try again.');
+      setIsUploading(false);
+      setUploadProgress(0);
+    };
+
+    xhr.send(formData);
   };
 
   const saveAbout = () => {
