@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function BottomNavBar() {
   const location = useLocation();
+  const { currentUser } = useAuth();
+  
+  if (!currentUser) return null;
   
   const navItems = [
     { path: '/', icon: 'person', label: 'Profile' },

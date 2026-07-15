@@ -6,6 +6,7 @@ import ProfilePhotoModal from '../components/ProfilePhotoModal';
 import ProfileInfoModal from '../components/ProfileInfoModal';
 import StudentProfileEditor from '../components/StudentProfileEditor';
 import RecruiterProfileEditor from '../components/RecruiterProfileEditor';
+import Landing from './Landing';
 
 export default function Profile() {
   const { currentUser, updateProfileInfo } = useAuth();
@@ -67,7 +68,6 @@ export default function Profile() {
 
   useEffect(() => {
     if (!currentUser) {
-      navigate('/login');
       return;
     }
 
@@ -99,7 +99,9 @@ export default function Profile() {
     updateProfileInfo(newData);
   };
 
-  if (!currentUser) return null;
+  if (!currentUser) {
+    return <Landing />;
+  }
 
   return (
     <div className="pt-20 pb-24 md:pb-8 min-h-screen container mx-auto max-w-[1000px] px-margin-mobile md:px-margin-desktop">

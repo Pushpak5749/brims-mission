@@ -28,11 +28,13 @@ export default function TopAppBar() {
         </Link>
       </div>
 
-      <div className="hidden md:flex items-center gap-8">
-        <Link to="/discover" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Discover</Link>
-        <Link to="/network" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Network</Link>
-        <Link to="/jobs" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Jobs</Link>
-      </div>
+      {currentUser && (
+        <div className="hidden md:flex items-center gap-8">
+          <Link to="/discover" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Discover</Link>
+          <Link to="/network" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Network</Link>
+          <Link to="/jobs" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Jobs</Link>
+        </div>
+      )}
 
 
       
@@ -95,9 +97,14 @@ export default function TopAppBar() {
             </AnimatePresence>
           </div>
         ) : (
-          <Link to="/login" className="w-10 h-10 rounded-full overflow-hidden border border-outline-variant hover:opacity-80 transition-opacity bg-surface-container-high flex items-center justify-center ml-2" title="Go to Login Page">
-            <span className="material-symbols-outlined text-on-surface-variant">person</span>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link to="/login" className="px-5 py-2 rounded-full border border-primary text-primary font-label-md font-bold hover:bg-primary/5 transition-colors hidden sm:block">
+              Login
+            </Link>
+            <Link to="/login" className="px-5 py-2 rounded-full bg-[#f1654c] text-white font-label-md font-bold hover:bg-[#d85842] transition-colors shadow-sm">
+              Register
+            </Link>
+          </div>
         )}
       </div>
     </header>
