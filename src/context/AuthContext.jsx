@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { auth, googleProvider, db } from '../firebase';
-import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 const AuthContext = createContext();
@@ -80,6 +80,19 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const loginWithEmail = async (email, password) => {
+    if (!auth) throw new Error("Firebase is not configured!");
+    await signInWithEmailAndPassword(auth, email, password);
+  };
+
+  const signupWithEmail = async (name, email, password) => {
+    if (!auth) throw new Error("Firebase is not configured!");
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    if (userCredential.user) {
+      await updateProfile(userCredential.user, { displayName: name });
+    }
+  };
+
   const updateProfilePhoto = async (newPhotoBase64) => {
     if (!currentUser || !db) return;
     
@@ -148,6 +161,8 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     loginWithGoogle,
+    loginWithEmail,
+    signupWithEmail,
     logout,
     updateProfilePhoto,
     updateProfileInfo
