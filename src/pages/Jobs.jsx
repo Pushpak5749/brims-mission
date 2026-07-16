@@ -4,12 +4,15 @@ import MiniProfileCard from '../components/MiniProfileCard';
 import { db } from '../firebase';
 import { collection, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
+import JobApplicationModal from '../components/JobApplicationModal';
 
 export default function Jobs() {
   const { currentUser } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savedJobs, setSavedJobs] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserSavedJobs = async () => {
@@ -168,10 +171,21 @@ export default function Jobs() {
                       </div>
                     )}
                     
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="flex items-center gap-1 text-[12px] text-primary font-bold">
-                        <span className="material-symbols-outlined text-[14px]">work</span> Easy Apply
-                      </span>
+                    <div className="flex items-center gap-3 mt-3">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!currentUser) {
+                            alert("Please login to apply.");
+                            return;
+                          }
+                          setSelectedJob(job);
+                          setIsApplyModalOpen(true);
+                        }}
+                        className="flex items-center gap-1 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary text-[13px] font-bold rounded-full transition-colors w-full sm:w-auto justify-center"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">work</span> Easy Apply
+                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -194,6 +208,17 @@ export default function Jobs() {
 
         </div>
       </div>
+      
+      {isApplyModalOpen && selectedJob && (
+        <JobApplicationModal 
+          job={selectedJob} 
+          recruiterId={selectedJob.companyId}
+          onClose={() => {
+            setIsApplyModalOpen(false);
+            setSelectedJob(null);
+          }} 
+        />
+      )}
     </div>
   );
 }

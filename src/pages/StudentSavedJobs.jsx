@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { collection, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import JobApplicationModal from '../components/JobApplicationModal';
 
 export default function StudentSavedJobs() {
   const { currentUser } = useAuth();
   const [savedJobs, setSavedJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchSavedJobs = async () => {
@@ -83,7 +86,13 @@ export default function StudentSavedJobs() {
                 </div>
               </div>
               <div className="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
-                <button className="flex-1 md:flex-none px-6 py-2 bg-primary text-white rounded-full font-label-md hover:bg-primary/90 transition-colors">
+                <button 
+                  onClick={() => {
+                    setSelectedJob(job);
+                    setIsApplyModalOpen(true);
+                  }}
+                  className="flex-1 md:flex-none px-6 py-2 bg-primary text-white rounded-full font-label-md hover:bg-primary/90 transition-colors"
+                >
                   Apply Now
                 </button>
                 <button onClick={() => handleRemoveSaved(job.id)} className="p-2 border border-outline-variant rounded-full text-on-surface-variant hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all flex items-center justify-center">
@@ -93,6 +102,17 @@ export default function StudentSavedJobs() {
             </div>
           ))}
         </div>
+      )}
+      
+      {isApplyModalOpen && selectedJob && (
+        <JobApplicationModal 
+          job={selectedJob} 
+          recruiterId={selectedJob.companyId}
+          onClose={() => {
+            setIsApplyModalOpen(false);
+            setSelectedJob(null);
+          }} 
+        />
       )}
     </div>
   );
