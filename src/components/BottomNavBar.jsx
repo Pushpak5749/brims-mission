@@ -12,8 +12,7 @@ export default function BottomNavBar() {
     { path: '/', icon: 'person', label: 'Profile' },
     { path: '/discover', icon: 'explore', label: 'Discover' },
     { path: '/network', icon: 'group', label: 'Network' },
-    { path: '/jobs', icon: 'work', label: 'Jobs' },
-    { path: '/messages', icon: 'chat', label: 'Messages' }
+    { path: '/jobs', icon: 'work', label: 'Jobs' }
   ];
 
   return (

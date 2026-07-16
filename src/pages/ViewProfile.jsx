@@ -5,6 +5,7 @@ import { db } from '../firebase';
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import JobApplicationModal from '../components/JobApplicationModal';
 import { useAuth } from '../context/AuthContext';
+import { useMessaging } from '../context/MessagingContext';
 
 export default function ViewProfile() {
   const { id } = useParams();
@@ -14,6 +15,7 @@ export default function ViewProfile() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const { currentUser } = useAuth();
+  const { openChat } = useMessaging();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -100,7 +102,7 @@ export default function ViewProfile() {
   const handleMessageClick = () => {
     if (!currentUser) return;
     const chatId = [currentUser.uid, id].sort().join('_');
-    navigate(`/messages/${chatId}`);
+    openChat(chatId);
   };
 
   return (

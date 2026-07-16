@@ -33,7 +33,6 @@ export default function TopAppBar() {
           <Link to="/discover" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Discover</Link>
           <Link to="/network" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Network</Link>
           <Link to="/jobs" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Jobs</Link>
-          <Link to="/messages" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Messages</Link>
         </div>
       )}
 

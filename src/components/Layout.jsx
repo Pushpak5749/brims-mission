@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import TopAppBar from './TopAppBar';
 import BottomNavBar from './BottomNavBar';
+import MessagingOverlay from './MessagingOverlay';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Layout() {
@@ -19,6 +20,7 @@ export default function Layout() {
         </motion.main>
       </AnimatePresence>
       <BottomNavBar />
+      <MessagingOverlay />
     </div>
   );
 }
