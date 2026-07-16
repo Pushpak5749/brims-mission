@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { doc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
 export default function StudentOnboarding() {
-  const { currentUser } = useAuth();
+  const { currentUser, updateProfileInfo } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: currentUser?.displayName || '',
@@ -25,8 +24,7 @@ export default function StudentOnboarding() {
     setLoading(true);
 
     try {
-      const docRef = doc(db, 'users', currentUser.uid);
-      await updateDoc(docRef, {
+      await updateProfileInfo({
         ...formData,
         skills: formData.skills.split(',').map(s => s.trim()).filter(Boolean),
         onboardingComplete: true

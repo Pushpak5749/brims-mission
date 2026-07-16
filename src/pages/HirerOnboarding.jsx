@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { doc, updateDoc } from 'firebase/firestore';
 
 export default function HirerOnboarding() {
   const { currentUser, updateProfileInfo } = useAuth();
@@ -37,7 +36,6 @@ export default function HirerOnboarding() {
     setLoading(true);
 
     try {
-      const userRef = doc(db, 'users', currentUser.uid);
       const updatedData = {
         ...formData,
         displayName: formData.companyName, // Override display name with company name
@@ -47,12 +45,7 @@ export default function HirerOnboarding() {
         role: formData.industryType
       };
       
-      await updateDoc(userRef, updatedData);
-      
-      // Update local context manually if onAuthStateChanged doesn't trigger immediately
-      if (updateProfileInfo) {
-         // Assuming updateProfileInfo exists or we just rely on navigation
-      }
+      await updateProfileInfo(updatedData);
 
       navigate('/hirer/dashboard');
     } catch (error) {

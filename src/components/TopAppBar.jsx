@@ -21,10 +21,19 @@ export default function TopAppBar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  let homeLink = "/";
+  if (currentUser) {
+    if (currentUser.status === 'hiring') {
+      homeLink = currentUser.verificationStatus ? "/hirer/dashboard" : "/hirer/onboarding";
+    } else if (currentUser.status === 'searching') {
+      homeLink = currentUser.onboardingComplete ? "/student/dashboard" : "/student/onboarding";
+    }
+  }
+
   return (
     <header className="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 gap-2">
       <div className="flex items-center gap-2 md:gap-4 flex-1">
-        <Link to="/" className="shrink-0">
+        <Link to={homeLink} className="shrink-0">
           <h1 className="font-headline-md text-headline-md font-extrabold text-primary tracking-tight hidden sm:block">Brims Mission</h1>
           <h1 className="font-headline-md text-headline-md font-extrabold text-primary tracking-tight sm:hidden text-xl">BM</h1>
         </Link>
