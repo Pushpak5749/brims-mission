@@ -18,6 +18,9 @@ export default function Jobs() {
           jobsList.push({ id: doc.id, ...doc.data() });
         });
         
+        // Sort jobs by newest first
+        jobsList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        
         setJobs(jobsList);
       } catch (error) {
         console.error("Error fetching jobs:", error);
