@@ -99,27 +99,35 @@ export default function Jobs() {
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.1 }}
                   className="p-5 border-b border-outline-variant/50 hover:bg-surface-container-low transition-colors flex gap-4 cursor-pointer group"
                 >
-                  <img src={job.logo || "https://ui-avatars.com/api/?name=JOB"} alt={job.company} className="w-14 h-14 object-cover" />
+                  <img src={job.companyLogo || "https://ui-avatars.com/api/?name=" + encodeURIComponent(job.company || 'JOB')} alt={job.company} className="w-14 h-14 object-cover rounded-md" />
                   <div className="grow">
                     <div className="flex justify-between items-start">
                       <h3 className="font-label-lg font-bold text-primary group-hover:underline">{job.title}</h3>
-                      <button className="text-outline-variant hover:text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="material-symbols-outlined">close</span>
-                      </button>
+                      <div className="flex gap-2 items-center">
+                        {job.verificationStatus === 'unverified' && (
+                          <span className="text-[10px] bg-error-container text-on-error-container px-2 py-0.5 rounded font-bold uppercase tracking-wider">Unverified</span>
+                        )}
+                        <span className="px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded text-[10px] font-bold uppercase tracking-wider">
+                          {job.type || 'Full-time'}
+                        </span>
+                        <button className="text-outline-variant hover:text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="material-symbols-outlined">bookmark</span>
+                        </button>
+                      </div>
                     </div>
                     <p className="text-body-sm text-on-surface font-bold">{job.company}</p>
-                    <p className="text-body-sm text-on-surface-variant mb-1">{job.location}</p>
+                    <p className="text-body-sm text-on-surface-variant mb-1">{job.location} {job.salary && `• ${job.salary}`}</p>
                     
-                    {job.reviewing && (
-                      <div className="flex items-center gap-1 text-[#2E7D32] mb-1">
-                        <span className="material-symbols-outlined text-[14px]">check_circle</span>
-                        <span className="text-[12px] font-bold">Actively reviewing applicants</span>
+                    {job.skills && job.skills.length > 0 && (
+                      <div className="flex gap-2 mt-2 mb-2">
+                        {job.skills.slice(0, 3).map(skill => (
+                          <span key={skill} className="text-[11px] bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">{skill}</span>
+                        ))}
                       </div>
                     )}
                     
                     <div className="flex items-center gap-3 mt-1">
-                      {job.promoted && <span className="text-[10px] text-outline">Promoted</span>}
-                      <span className="flex items-center gap-1 text-[12px] text-on-surface font-bold">
+                      <span className="flex items-center gap-1 text-[12px] text-primary font-bold">
                         <span className="material-symbols-outlined text-[14px]">work</span> Easy Apply
                       </span>
                     </div>

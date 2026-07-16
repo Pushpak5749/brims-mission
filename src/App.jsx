@@ -11,6 +11,13 @@ import Login from './pages/Login';
 import CreatePortfolio from './pages/CreatePortfolio';
 import { MessagingProvider } from './context/MessagingContext';
 
+import HirerLayout from './components/HirerLayout';
+import HirerOverview from './pages/HirerOverview';
+import HirerProfile from './pages/HirerProfile';
+import HirerJobs from './pages/HirerJobs';
+import HirerCandidates from './pages/HirerCandidates';
+import HirerOnboarding from './pages/HirerOnboarding';
+
 function App() {
   return (
     <>
@@ -26,6 +33,15 @@ function App() {
           <Route path="jobs" element={<Jobs />} />
           <Route path="search" element={<Search />} />
           <Route path="portfolio/create" element={<CreatePortfolio />} />
+          <Route path="hirer/onboarding" element={<HirerOnboarding />} />
+        </Route>
+        
+        {/* Dedicated Hirer Dashboard Routes */}
+        <Route path="/hirer" element={<HirerLayout />}>
+          <Route path="dashboard" element={<HirerOverview />} />
+          <Route path="profile" element={<HirerProfile />} />
+          <Route path="jobs" element={<HirerJobs />} />
+          <Route path="candidates" element={<HirerCandidates />} />
         </Route>
       </Routes>
     </BrowserRouter>

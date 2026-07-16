@@ -24,6 +24,17 @@ export default function Profile() {
   const [showStatusConfirmModal, setShowStatusConfirmModal] = useState(false);
   const [pendingStatus, setPendingStatus] = useState(null);
 
+  // Redirect hirers to their dashboard or onboarding
+  useEffect(() => {
+    if (currentUser?.status === 'hiring') {
+      if (!currentUser.verificationStatus) {
+        navigate('/hirer/onboarding');
+      } else {
+        navigate('/hirer/dashboard');
+      }
+    }
+  }, [currentUser, navigate]);
+
   // Calculate cooldown
   const now = Date.now();
   const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
