@@ -118,8 +118,8 @@ export function AuthProvider({ children }) {
     let newStatus = currentUser.status;
     let newStatusLastUpdated = currentUser.statusLastUpdated;
 
-    // Check if they are trying to change their status
-    if (newData.status && newData.status !== currentUser.status) {
+    // Check if they are trying to change their status (or locking in a legacy status)
+    if (newData.status && (newData.status !== currentUser.status || !currentUser.statusLastUpdated)) {
       const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
       if (currentUser.statusLastUpdated && (now - currentUser.statusLastUpdated < oneWeekMs)) {
         throw new Error("COOLDOWN_ACTIVE"); // Throw error to be caught by the UI

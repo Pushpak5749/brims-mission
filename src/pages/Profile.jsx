@@ -92,11 +92,11 @@ export default function Profile() {
     });
   }, [currentUser, navigate]);
 
-  const handleSaveProfileInfo = (newData) => {
+  const handleSaveProfileInfo = async (newData) => {
     // 1. Update local state for immediate re-render
     setProfileData(prev => ({ ...prev, ...newData }));
     // 2. Persist using Context method
-    updateProfileInfo(newData);
+    await updateProfileInfo(newData);
   };
 
   if (!currentUser) {
