@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import GlobalSearch from './GlobalSearch';
 
 export default function TopAppBar() {
   const { currentUser, logout } = useAuth();
@@ -21,11 +22,13 @@ export default function TopAppBar() {
   }, []);
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16">
-      <div className="flex items-center gap-4">
-        <Link to="/">
-          <h1 className="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">Brims Mission</h1>
+    <header className="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 gap-2">
+      <div className="flex items-center gap-2 md:gap-4 flex-1">
+        <Link to="/" className="shrink-0">
+          <h1 className="font-headline-md text-headline-md font-extrabold text-primary tracking-tight hidden sm:block">Brims Mission</h1>
+          <h1 className="font-headline-md text-headline-md font-extrabold text-primary tracking-tight sm:hidden text-xl">BM</h1>
         </Link>
+        {currentUser && <GlobalSearch />}
       </div>
 
       {currentUser && (
