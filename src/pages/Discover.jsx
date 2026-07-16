@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import MiniProfileCard from '../components/MiniProfileCard';
+import FilterPanel from '../components/FilterPanel';
 import { db } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
@@ -9,6 +10,11 @@ export default function Discover() {
   const navigate = useNavigate();
   const [portfolios, setPortfolios] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Filter states
+  const [selectedDomains, setSelectedDomains] = useState([]);
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -45,18 +51,87 @@ export default function Discover() {
     fetchUsers();
   }, []);
 
+  // Apply filters
+  const filteredPortfolios = portfolios.filter(user => {
+    let domainMatch = true;
+    let skillMatch = true;
+
+    if (selectedDomains.length > 0) {
+      domainMatch = selectedDomains.some(domain => {
+        const d = domain.toLowerCase();
+        const role = (user.role || '').toLowerCase();
+        const about = (user.about || '').toLowerCase();
+        const skillsStr = (user.skills || []).join(' ').toLowerCase();
+        return role.includes(d) || about.includes(d) || skillsStr.includes(d);
+      });
+    }
+
+    if (selectedSkills.length > 0) {
+      skillMatch = selectedSkills.some(skill => (user.skills || []).includes(skill));
+    }
+
+    return domainMatch && skillMatch;
+  });
+
   return (
     <div className="pt-24 pb-28 md:pb-12 max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop text-on-surface">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
         
-        {/* Left Sidebar */}
-        <div className="hidden lg:block lg:col-span-3">
+        {/* Left Sidebar (Desktop) */}
+        <div className="hidden lg:block lg:col-span-3 sticky top-24 self-start h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar pr-2 pb-10">
           <MiniProfileCard />
+          <FilterPanel 
+            portfolios={portfolios}
+            selectedDomains={selectedDomains}
+            setSelectedDomains={setSelectedDomains}
+            selectedSkills={selectedSkills}
+            setSelectedSkills={setSelectedSkills}
+          />
         </div>
+
+        {/* Mobile Filter Toggle & Overlay */}
+        <div className="lg:hidden mb-4 flex justify-between items-center">
+          <h1 className="font-display-sm text-on-surface">Discover</h1>
+          <button 
+            onClick={() => setIsMobileFilterOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-surface-container border border-outline-variant rounded-full text-label-md font-bold hover:bg-surface-container-high transition-colors"
+          >
+            <span className="material-symbols-outlined text-[18px]">filter_list</span>
+            Filters {(selectedDomains.length + selectedSkills.length) > 0 && `(${selectedDomains.length + selectedSkills.length})`}
+          </button>
+        </div>
+
+        {isMobileFilterOpen && (
+          <div className="fixed inset-0 z-[100] bg-black/50 flex justify-end">
+            <motion.div 
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              className="w-[300px] h-full bg-surface-container-lowest p-6 overflow-y-auto custom-scrollbar relative"
+            >
+              <button 
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-surface-container-low"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+              <div className="mt-8">
+                <MiniProfileCard />
+                <FilterPanel 
+                  portfolios={portfolios}
+                  selectedDomains={selectedDomains}
+                  setSelectedDomains={setSelectedDomains}
+                  selectedSkills={selectedSkills}
+                  setSelectedSkills={setSelectedSkills}
+                />
+              </div>
+            </motion.div>
+          </div>
+        )}
 
         {/* Main Content Area */}
         <div className="lg:col-span-9">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 hidden lg:block">
             <h1 className="font-display-sm text-on-surface mb-2">Discover Students & Peers</h1>
             <p className="text-body-sm text-on-surface-variant">Connect with students and early professionals showcasing high-impact projects.</p>
           </motion.div>
@@ -65,9 +140,9 @@ export default function Discover() {
             <div className="flex justify-center items-center h-48">
               <span className="material-symbols-outlined animate-spin text-primary text-4xl">refresh</span>
             </div>
-          ) : portfolios.length > 0 ? (
+          ) : filteredPortfolios.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {portfolios.map((portfolio, i) => (
+              {filteredPortfolios.map((portfolio, i) => (
                 <motion.div 
                   key={portfolio.id}
                   initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
