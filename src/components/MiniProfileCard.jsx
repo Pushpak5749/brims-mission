@@ -13,6 +13,7 @@ export default function MiniProfileCard({ extraLinks = null }) {
     university: 'University',
   });
   const [profileViews, setProfileViews] = useState(0);
+  const [connectionsCount, setConnectionsCount] = useState(0);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -20,7 +21,9 @@ export default function MiniProfileCard({ extraLinks = null }) {
     // Listen for live profile views
     const unsubscribe = onSnapshot(doc(db, 'users', currentUser.uid), (docSnap) => {
       if (docSnap.exists()) {
-        setProfileViews(docSnap.data().profileViews || 0);
+        const data = docSnap.data();
+        setProfileViews(data.profileViews || 0);
+        setConnectionsCount(data.connections?.length || 0);
       }
     });
 
@@ -74,6 +77,10 @@ export default function MiniProfileCard({ extraLinks = null }) {
           <div className="flex justify-between items-center text-[12px] font-bold text-on-surface-variant mb-1 hover:bg-surface-container-low cursor-pointer p-1 -mx-1 rounded transition-colors">
             <span>Profile viewers</span>
             <span className="text-primary">{profileViews}</span>
+          </div>
+          <div className="flex justify-between items-center text-[12px] font-bold text-on-surface-variant hover:bg-surface-container-low cursor-pointer p-1 -mx-1 rounded transition-colors">
+            <span>Connections</span>
+            <span className="text-primary">{connectionsCount}</span>
           </div>
         </div>
       </div>
