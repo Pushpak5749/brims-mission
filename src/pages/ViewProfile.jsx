@@ -97,6 +97,12 @@ export default function ViewProfile() {
     }
   };
 
+  const handleMessageClick = () => {
+    if (!currentUser) return;
+    const chatId = [currentUser.uid, id].sort().join('_');
+    navigate(`/messages/${chatId}`);
+  };
+
   return (
     <div className="pt-20 pb-24 md:pb-8 min-h-screen container mx-auto max-w-[1000px] px-margin-mobile md:px-margin-desktop">
       <div className="mb-4">
@@ -172,10 +178,15 @@ export default function ViewProfile() {
                     {isConnected ? 'Connected' : 'Connect'}
                   </button>
                 )}
-                <button className="bg-surface border border-primary text-primary font-label-md px-4 py-1.5 rounded-full hover:bg-surface-container-low transition-colors flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[18px]">send</span>
-                  Message
-                </button>
+                {currentUser && currentUser.uid !== id && (
+                  <button 
+                    onClick={handleMessageClick}
+                    className="bg-surface border border-primary text-primary font-label-md px-4 py-1.5 rounded-full hover:bg-surface-container-low transition-colors flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">send</span>
+                    Message
+                  </button>
+                )}
                 <button className="p-1.5 rounded-full border border-outline hover:bg-surface-container-low text-on-surface-variant transition-colors flex items-center justify-center">
                   <span className="material-symbols-outlined text-[20px]">more_horiz</span>
                 </button>

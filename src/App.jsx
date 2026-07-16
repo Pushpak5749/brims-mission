@@ -8,6 +8,7 @@ import Network from './pages/Network';
 import Jobs from './pages/Jobs';
 import Login from './pages/Login';
 import CreatePortfolio from './pages/CreatePortfolio';
+import Messages from './pages/Messages';
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
           <Route path="network" element={<Network />} />
           <Route path="jobs" element={<Jobs />} />
           <Route path="portfolio/create" element={<CreatePortfolio />} />
+          <Route path="messages" element={<Messages />} />
+          <Route path="messages/:chatId" element={<Messages />} />
         </Route>
       </Routes>
     </BrowserRouter>
