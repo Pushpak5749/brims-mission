@@ -1,14 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { db } from '../firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 export default function MiniProfileCard({ extraLinks = null }) {
   const { currentUser } = useAuth();
   const [profileData, setProfileData] = useState({
     name: 'Demo User',
     role: 'Aspiring Professional',
+    role: 'Aspiring Professional',
     university: 'University',
   });
+  const [profileViews, setProfileViews] = useState(0);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    
+    // Listen for live profile views
+    const unsubscribe = onSnapshot(doc(db, 'users', currentUser.uid), (docSnap) => {
+      if (docSnap.exists()) {
+        setProfileViews(docSnap.data().profileViews || 0);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
 
   useEffect(() => {
     if (currentUser) {
@@ -54,13 +71,9 @@ export default function MiniProfileCard({ extraLinks = null }) {
           <p className="text-[12px] text-outline mt-1 line-clamp-2">{profileData.role} || {profileData.university}</p>
         </div>
         <div className="border-t border-outline-variant py-3 px-4 text-left">
-          <div className="flex justify-between items-center text-[12px] font-bold text-on-surface-variant mb-1 hover:bg-surface-container-low cursor-pointer p-1 -mx-1 rounded">
+          <div className="flex justify-between items-center text-[12px] font-bold text-on-surface-variant mb-1 hover:bg-surface-container-low cursor-pointer p-1 -mx-1 rounded transition-colors">
             <span>Profile viewers</span>
-            <span className="text-primary">84</span>
-          </div>
-          <div className="flex justify-between items-center text-[12px] font-bold text-on-surface-variant hover:bg-surface-container-low cursor-pointer p-1 -mx-1 rounded">
-            <span>Post impressions</span>
-            <span className="text-primary">120</span>
+            <span className="text-primary">{profileViews}</span>
           </div>
         </div>
       </div>

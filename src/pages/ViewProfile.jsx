@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { db } from '../firebase';
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore';
 import JobApplicationModal from '../components/JobApplicationModal';
 import { useAuth } from '../context/AuthContext';
 import { useMessaging } from '../context/MessagingContext';
@@ -29,6 +29,11 @@ export default function ViewProfile() {
             data.status = '';
           }
           setProfileData(data);
+          
+          // Increment profile views if viewed by someone else
+          if (currentUser && currentUser.uid !== id) {
+            updateDoc(docRef, { profileViews: increment(1) }).catch(err => console.error("Error incrementing views:", err));
+          }
         } else {
           setProfileData(null); // User not found
         }
