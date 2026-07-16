@@ -31,6 +31,8 @@ export default function Discover() {
              }
            });
         }
+        // Sort users by profile views in descending order
+        usersList.sort((a, b) => (b.profileViews || 0) - (a.profileViews || 0));
         
         setPortfolios(usersList);
       } catch (error) {
