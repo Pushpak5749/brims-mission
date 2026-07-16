@@ -24,7 +24,7 @@ export default function BottomNavBar() {
           <Link 
             key={item.label}
             to={item.path} 
-            className={`flex flex-col items-center justify-center rounded-full px-4 py-1 active:scale-95 transition-all duration-200 ${
+            className={`flex flex-col items-center justify-center rounded-full px-2 py-1 active:scale-95 transition-all duration-200 ${
               isActive 
                 ? 'bg-primary-container text-on-primary-container' 
                 : 'text-on-surface-variant hover:text-primary'
