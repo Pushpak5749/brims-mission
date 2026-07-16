@@ -6,11 +6,8 @@ import { Link } from 'react-router-dom';
 
 export default function StudentOverview() {
   const { currentUser } = useAuth();
-  const [stats, setStats] = useState({
-    applied: 0,
-    saved: 0,
-    interviews: 0
-  });
+  const [stats, setStats] = useState({ applied: 0, saved: 0, interviews: 0 });
+  const [recentApps, setRecentApps] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,11 +19,32 @@ export default function StudentOverview() {
         const appsSnap = await getDocs(appsQ);
         
         let interviewCount = 0;
+        const appsList = [];
         appsSnap.forEach(doc => {
           if (doc.data().status === 'interview') {
             interviewCount++;
           }
+          appsList.push({ id: doc.id, ...doc.data() });
         });
+        
+        appsList.sort((a, b) => (b.appliedAt || 0) - (a.appliedAt || 0));
+        
+        // Fetch logos for top 3 recent apps
+        const topApps = appsList.slice(0, 3);
+        for (let i = 0; i < topApps.length; i++) {
+          try {
+            if (topApps[i].jobId) {
+              const jobDoc = await getDoc(doc(db, 'jobs', topApps[i].jobId));
+              if (jobDoc.exists()) {
+                topApps[i].companyLogo = jobDoc.data().companyLogo;
+              }
+            }
+          } catch (e) {
+            console.error("Error fetching job logo", e);
+          }
+        }
+        
+        setRecentApps(topApps);
 
         // Fetch saved jobs from user profile
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
@@ -91,13 +109,46 @@ export default function StudentOverview() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant shadow-sm">
-          <h2 className="font-title-lg font-bold mb-4">Recent Applications</h2>
-          <div className="text-center py-10">
-            <span className="material-symbols-outlined text-5xl text-outline-variant mb-3">work_history</span>
-            <p className="text-body-md text-on-surface-variant">View your full application history in the Tracker.</p>
-            <Link to="/student/applications" className="inline-block mt-4 text-primary font-bold hover:underline">Go to Applications</Link>
+        <div className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant shadow-sm flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="font-title-lg font-bold">Recent Applications</h2>
+            <Link to="/student/applications" className="text-primary font-bold text-sm hover:underline">View All</Link>
           </div>
+          
+          {loading ? (
+            <div className="flex-1 flex justify-center items-center py-10">
+              <span className="material-symbols-outlined animate-spin text-4xl text-primary">refresh</span>
+            </div>
+          ) : recentApps.length === 0 ? (
+            <div className="text-center py-10 flex-1 flex flex-col justify-center">
+              <span className="material-symbols-outlined text-5xl text-outline-variant mb-3">work_history</span>
+              <p className="text-body-md text-on-surface-variant">You haven't applied to any jobs yet.</p>
+              <Link to="/jobs" className="inline-block mt-4 text-primary font-bold hover:underline">Browse Jobs</Link>
+            </div>
+          ) : (
+            <div className="space-y-4 flex-1">
+              {recentApps.map(app => (
+                <div key={app.id} className="flex gap-4 p-4 rounded-2xl hover:bg-surface-container-low transition-colors border border-transparent hover:border-outline-variant">
+                  <div className="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center shrink-0 overflow-hidden border border-outline-variant">
+                    {app.companyLogo ? (
+                      <img src={app.companyLogo} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="material-symbols-outlined text-on-surface-variant">domain</span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-on-surface truncate">{app.jobTitle}</h4>
+                    <p className="text-body-sm text-on-surface-variant truncate mb-1">
+                      {app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : 'Recently applied'}
+                    </p>
+                    <span className="inline-block px-2 py-0.5 bg-surface-container-high text-xs font-bold text-on-surface-variant rounded-full capitalize">
+                      {app.status || 'Application Sent'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant shadow-sm">
           <h2 className="font-title-lg font-bold mb-4">Resume Tips</h2>

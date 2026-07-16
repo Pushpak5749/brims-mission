@@ -41,7 +41,7 @@ export default function StudentApplications() {
           });
         }
         
-        appsList.sort((a, b) => b.appliedAt - a.appliedAt);
+        appsList.sort((a, b) => (b.appliedAt || 0) - (a.appliedAt || 0));
         setApplications(appsList);
       } catch (error) {
         console.error("Error fetching applications", error);
