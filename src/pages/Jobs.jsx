@@ -2,11 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import MiniProfileCard from '../components/MiniProfileCard';
 import { db } from '../firebase';
-import { collection, query, getDocs } from 'firebase/firestore';
+import { collection, query, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
 
 export default function Jobs() {
+  const { currentUser } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [savedJobs, setSavedJobs] = useState([]);
+
+  useEffect(() => {
+    const fetchUserSavedJobs = async () => {
+      if (currentUser) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          setSavedJobs(userDoc.data()?.savedJobs || []);
+        } catch (error) {
+          console.error("Error fetching saved jobs", error);
+        }
+      }
+    };
+    fetchUserSavedJobs();
+  }, [currentUser]);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -31,6 +48,28 @@ export default function Jobs() {
 
     fetchJobs();
   }, []);
+
+  const handleToggleSaveJob = async (jobId) => {
+    if (!currentUser) {
+      alert("Please login to save jobs.");
+      return;
+    }
+    try {
+      const isSaved = savedJobs.includes(jobId);
+      let updatedSaved = [...savedJobs];
+      
+      if (isSaved) {
+        updatedSaved = updatedSaved.filter(id => id !== jobId);
+      } else {
+        updatedSaved.push(jobId);
+      }
+      
+      setSavedJobs(updatedSaved);
+      await updateDoc(doc(db, 'users', currentUser.uid), { savedJobs: updatedSaved });
+    } catch (error) {
+      console.error("Error saving job", error);
+    }
+  };
 
   const extraSidebarLinks = (
     <div className="flex flex-col">
@@ -113,8 +152,8 @@ export default function Jobs() {
                         <span className="px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded text-[10px] font-bold uppercase tracking-wider">
                           {job.type || 'Full-time'}
                         </span>
-                        <button className="text-outline-variant hover:text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="material-symbols-outlined">bookmark</span>
+                        <button onClick={() => handleToggleSaveJob(job.id)} className={`transition-opacity ${savedJobs.includes(job.id) ? 'text-primary opacity-100' : 'text-outline-variant hover:text-on-surface-variant opacity-0 group-hover:opacity-100'}`}>
+                          <span className={savedJobs.includes(job.id) ? "material-symbols-icons" : "material-symbols-outlined"}>bookmark</span>
                         </button>
                       </div>
                     </div>

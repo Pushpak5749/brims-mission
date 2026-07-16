@@ -18,6 +18,14 @@ import HirerJobs from './pages/HirerJobs';
 import HirerCandidates from './pages/HirerCandidates';
 import HirerOnboarding from './pages/HirerOnboarding';
 
+import StudentLayout from './components/StudentLayout';
+import StudentOnboarding from './pages/StudentOnboarding';
+import StudentOverview from './pages/StudentOverview';
+import StudentProfile from './pages/StudentProfile';
+import StudentApplications from './pages/StudentApplications';
+import StudentSavedJobs from './pages/StudentSavedJobs';
+import StudentResume from './pages/StudentResume';
+
 function App() {
   return (
     <>
@@ -43,6 +51,18 @@ function App() {
           <Route path="jobs" element={<HirerJobs />} />
           <Route path="candidates" element={<HirerCandidates />} />
         </Route>
+
+        {/* Dedicated Student Dashboard Routes */}
+        <Route path="/student" element={<StudentLayout />}>
+          <Route path="dashboard" element={<StudentOverview />} />
+          <Route path="profile" element={<StudentProfile />} />
+          <Route path="applications" element={<StudentApplications />} />
+          <Route path="saved" element={<StudentSavedJobs />} />
+          <Route path="resume" element={<StudentResume />} />
+        </Route>
+        
+        {/* Onboarding outside of specific layouts to keep it clean */}
+        <Route path="/student/onboarding" element={<StudentOnboarding />} />
       </Routes>
     </BrowserRouter>
     </MessagingProvider>

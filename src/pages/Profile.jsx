@@ -26,11 +26,19 @@ export default function Profile() {
 
   // Redirect hirers to their dashboard or onboarding
   useEffect(() => {
-    if (currentUser?.status === 'hiring') {
-      if (!currentUser.verificationStatus) {
-        navigate('/hirer/onboarding');
-      } else {
-        navigate('/hirer/dashboard');
+    if (currentUser) {
+      if (currentUser.status === 'hiring') {
+        if (!currentUser.verificationStatus) {
+          navigate('/hirer/onboarding', { replace: true });
+        } else {
+          navigate('/hirer/dashboard', { replace: true });
+        }
+      } else if (currentUser.status === 'searching') {
+        if (!currentUser.onboardingComplete) {
+          navigate('/student/onboarding', { replace: true });
+        } else {
+          navigate('/student/dashboard', { replace: true });
+        }
       }
     }
   }, [currentUser, navigate]);
