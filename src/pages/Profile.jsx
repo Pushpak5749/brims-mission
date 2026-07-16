@@ -196,7 +196,9 @@ export default function Profile() {
                     {profileData.location} <span className="font-bold text-primary mx-1">·</span> 
                     <a href="#" className="font-bold text-primary hover:underline">Contact info</a>
                   </p>
-                  <p className="font-label-md text-primary mt-2 font-bold hover:underline cursor-pointer">500+ connections</p>
+                  <p className="font-label-md text-primary mt-2 font-bold hover:underline cursor-pointer">
+                    {profileData.connections?.length || 0} connection{profileData.connections?.length !== 1 ? 's' : ''}
+                  </p>
                 </div>
                 
                 <div className="flex flex-col gap-2 md:items-end">

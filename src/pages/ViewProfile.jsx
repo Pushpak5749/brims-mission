@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import JobApplicationModal from '../components/JobApplicationModal';
+import { useAuth } from '../context/AuthContext';
 
 export default function ViewProfile() {
   const { id } = useParams();
@@ -11,6 +12,8 @@ export default function ViewProfile() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -60,6 +63,40 @@ export default function ViewProfile() {
 
   if (!profileData) return null;
 
+  const isConnected = currentUser && profileData.connections?.includes(currentUser.uid);
+
+  const handleConnect = async () => {
+    if (!currentUser || isConnecting) return;
+    
+    setIsConnecting(true);
+    try {
+      const myRef = doc(db, 'users', currentUser.uid);
+      const theirRef = doc(db, 'users', id);
+
+      if (isConnected) {
+        // Disconnect
+        await updateDoc(myRef, { connections: arrayRemove(id) });
+        await updateDoc(theirRef, { connections: arrayRemove(currentUser.uid) });
+        setProfileData(prev => ({
+          ...prev,
+          connections: prev.connections?.filter(uid => uid !== currentUser.uid) || []
+        }));
+      } else {
+        // Connect
+        await updateDoc(myRef, { connections: arrayUnion(id) });
+        await updateDoc(theirRef, { connections: arrayUnion(currentUser.uid) });
+        setProfileData(prev => ({
+          ...prev,
+          connections: [...(prev.connections || []), currentUser.uid]
+        }));
+      }
+    } catch (error) {
+      console.error("Error updating connection status:", error);
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
   return (
     <div className="pt-20 pb-24 md:pb-8 min-h-screen container mx-auto max-w-[1000px] px-margin-mobile md:px-margin-desktop">
       <div className="mb-4">
@@ -102,7 +139,9 @@ export default function ViewProfile() {
                     {profileData.location || "Earth"} <span className="font-bold text-primary mx-1">·</span> 
                     <a href="#" className="font-bold text-primary hover:underline">Contact info</a>
                   </p>
-                  <p className="font-label-md text-primary mt-2 font-bold hover:underline cursor-pointer">500+ connections</p>
+                  <p className="font-label-md text-primary mt-2 font-bold hover:underline cursor-pointer">
+                    {profileData.connections?.length || 0} connection{profileData.connections?.length !== 1 ? 's' : ''}
+                  </p>
                 </div>
                 
                 <div className="flex flex-col gap-2 md:items-end">
@@ -117,10 +156,22 @@ export default function ViewProfile() {
 
               {/* Action Buttons */}
               <div className="mt-6 flex flex-wrap gap-2">
-                <button className="bg-primary text-white font-label-md px-4 py-1.5 rounded-full hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[18px]">person_add</span>
-                  Connect
-                </button>
+                {currentUser && currentUser.uid !== id && (
+                  <button 
+                    onClick={handleConnect}
+                    disabled={isConnecting}
+                    className={`font-label-md px-4 py-1.5 rounded-full transition-colors shadow-sm flex items-center gap-1 ${
+                      isConnected 
+                        ? 'bg-surface border border-outline text-on-surface-variant hover:bg-surface-container' 
+                        : 'bg-primary text-white hover:bg-primary/90'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      {isConnected ? 'check' : 'person_add'}
+                    </span>
+                    {isConnected ? 'Connected' : 'Connect'}
+                  </button>
+                )}
                 <button className="bg-surface border border-primary text-primary font-label-md px-4 py-1.5 rounded-full hover:bg-surface-container-low transition-colors flex items-center gap-1">
                   <span className="material-symbols-outlined text-[18px]">send</span>
                   Message
