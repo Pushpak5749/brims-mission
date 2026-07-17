@@ -13,6 +13,12 @@ export default function Jobs() {
   const [savedJobs, setSavedJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  
+  // Filters state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterLocation, setFilterLocation] = useState('');
+  const [filterJobType, setFilterJobType] = useState('');
+  const [filterIndustry, setFilterIndustry] = useState('');
 
   useEffect(() => {
     const fetchUserSavedJobs = async () => {
@@ -74,23 +80,87 @@ export default function Jobs() {
     }
   };
 
-  const extraSidebarLinks = (
-    <div className="flex flex-col">
-      <div className="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors border-b border-outline-variant/50">
-        <span className="material-symbols-outlined text-on-surface-variant">list</span>
-        <span className="font-label-md text-on-surface font-bold">Preferences</span>
-      </div>
-      <div className="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors border-b border-outline-variant/50">
-        <span className="material-symbols-outlined text-on-surface-variant">bookmark</span>
-        <span className="font-label-md text-on-surface font-bold">Job tracker</span>
-      </div>
-      <div className="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors border-b border-outline-variant/50">
-        <span className="material-symbols-outlined text-yellow-600">insights</span>
-        <span className="font-label-md text-on-surface font-bold">My Career Insights</span>
-      </div>
-      <div className="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors">
-        <span className="material-symbols-outlined text-primary">edit_square</span>
-        <span className="font-label-md text-primary font-bold">Post a free job</span>
+  const filteredJobs = jobs.filter(job => {
+    const matchesSearch = !searchTerm || 
+      (job.title && job.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (job.company && job.company.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+    const matchesLocation = !filterLocation || 
+      (job.location && job.location.toLowerCase().includes(filterLocation.toLowerCase()));
+      
+    const matchesType = !filterJobType || 
+      (job.type && job.type.toLowerCase() === filterJobType.toLowerCase());
+
+    const matchesIndustry = !filterIndustry || 
+      (job.industry && job.industry.toLowerCase() === filterIndustry.toLowerCase());
+
+    return matchesSearch && matchesLocation && matchesType && matchesIndustry;
+  });
+
+  const filterSidebar = (
+    <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm mt-4 lg:mt-0">
+      <h3 className="font-label-lg font-bold mb-4">Filter Jobs</h3>
+      
+      <div className="space-y-4">
+        <div>
+          <label className="block text-label-sm font-bold text-on-surface-variant mb-1">Search Keywords</label>
+          <input 
+            type="text" 
+            placeholder="Job title, company..." 
+            className="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+        </div>
+        
+        <div>
+          <label className="block text-label-sm font-bold text-on-surface-variant mb-1">Location</label>
+          <input 
+            type="text" 
+            placeholder="City, state, or Remote" 
+            className="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
+            value={filterLocation}
+            onChange={e => setFilterLocation(e.target.value)}
+          />
+        </div>
+        
+        <div>
+          <label className="block text-label-sm font-bold text-on-surface-variant mb-1">Job Type</label>
+          <select 
+            className="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
+            value={filterJobType}
+            onChange={e => setFilterJobType(e.target.value)}
+          >
+            <option value="">All Types</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-label-sm font-bold text-on-surface-variant mb-1">Industry</label>
+          <input 
+            type="text" 
+            placeholder="e.g. Technology, Finance" 
+            className="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
+            value={filterIndustry}
+            onChange={e => setFilterIndustry(e.target.value)}
+          />
+        </div>
+        
+        <button 
+          onClick={() => {
+            setSearchTerm('');
+            setFilterLocation('');
+            setFilterJobType('');
+            setFilterIndustry('');
+          }}
+          className="w-full py-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-lg font-bold text-sm transition-colors mt-2"
+        >
+          Clear Filters
+        </button>
       </div>
     </div>
   );
@@ -100,8 +170,9 @@ export default function Jobs() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Sidebar */}
-        <div className="hidden lg:block lg:col-span-3">
-          <MiniProfileCard extraContent={extraSidebarLinks} />
+        <div className="lg:col-span-3">
+          {currentUser && <MiniProfileCard />}
+          {filterSidebar}
         </div>
 
         {/* Main Content Area */}
@@ -137,8 +208,8 @@ export default function Jobs() {
               <div className="flex justify-center items-center h-48">
                 <span className="material-symbols-outlined animate-spin text-primary text-4xl">refresh</span>
               </div>
-            ) : jobs.length > 0 ? (
-              jobs.map((job, i) => (
+            ) : filteredJobs.length > 0 ? (
+              filteredJobs.map((job, i) => (
                 <motion.div 
                   key={job.id}
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.1 }}

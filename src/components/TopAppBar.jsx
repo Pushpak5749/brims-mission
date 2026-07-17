@@ -40,11 +40,20 @@ export default function TopAppBar() {
         {currentUser && <GlobalSearch />}
       </div>
 
-      {currentUser && (
+      {currentUser ? (
         <div className="hidden md:flex items-center gap-8">
           <Link to="/discover" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Discover</Link>
           <Link to="/network" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Network</Link>
           <Link to="/jobs" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Jobs</Link>
+        </div>
+      ) : (
+        <div className="hidden md:flex items-center gap-6">
+          <Link to="/about" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">About</Link>
+          <Link to="/jobs" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Jobs</Link>
+          <Link to="/internships" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Internships</Link>
+          <Link to="/companies" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Companies</Link>
+          <Link to="/training" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Training</Link>
+          <Link to="/contact" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Contact</Link>
         </div>
       )}
 

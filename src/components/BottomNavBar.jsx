@@ -6,14 +6,19 @@ export default function BottomNavBar() {
   const location = useLocation();
   const { currentUser } = useAuth();
   
-  if (!currentUser) return null;
-  
-  const navItems = [
-    { path: '/', icon: 'person', label: 'Profile' },
-    { path: '/discover', icon: 'explore', label: 'Discover' },
-    { path: '/network', icon: 'group', label: 'Network' },
-    { path: '/jobs', icon: 'work', label: 'Jobs' }
-  ];
+  const navItems = currentUser 
+    ? [
+        { path: currentUser.status === 'hiring' ? '/hirer/dashboard' : (currentUser.status === 'searching' ? '/student/dashboard' : '/'), icon: 'dashboard', label: 'Dashboard' },
+        { path: '/discover', icon: 'explore', label: 'Discover' },
+        { path: '/network', icon: 'group', label: 'Network' },
+        { path: '/jobs', icon: 'work', label: 'Jobs' }
+      ]
+    : [
+        { path: '/', icon: 'home', label: 'Home' },
+        { path: '/jobs', icon: 'work', label: 'Jobs' },
+        { path: '/internships', icon: 'school', label: 'Interns' },
+        { path: '/companies', icon: 'domain', label: 'Companies' }
+      ];
 
   return (
     <nav className="fixed bottom-0 w-full z-50 bg-surface border-t border-outline-variant shadow-lg flex justify-around items-center h-20 md:hidden">

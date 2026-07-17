@@ -11,6 +11,14 @@ import Login from './pages/Login';
 import CreatePortfolio from './pages/CreatePortfolio';
 import { MessagingProvider } from './context/MessagingContext';
 
+import Home from './pages/Home';
+import About from './pages/About';
+import Internships from './pages/Internships';
+import CompanyDirectory from './pages/CompanyDirectory';
+import Training from './pages/Training';
+import Contact from './pages/Contact';
+import Legal from './pages/Legal';
+
 import HirerLayout from './components/HirerLayout';
 import HirerOverview from './pages/HirerOverview';
 import HirerProfile from './pages/HirerProfile';
@@ -34,13 +42,21 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Layout />}>
-          <Route index element={<Profile />} />
-          <Route path="profile/view/:id" element={<ViewProfile />} />
+          <Route index element={<Home />} />
+          <Route path="about" element={<About />} />
+          <Route path="internships" element={<Internships />} />
+          <Route path="companies" element={<CompanyDirectory />} />
+          <Route path="training" element={<Training />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="legal" element={<Legal />} />
+          
           <Route path="discover" element={<Discover />} />
           <Route path="network" element={<Network />} />
           <Route path="jobs" element={<Jobs />} />
           <Route path="search" element={<Search />} />
+          <Route path="profile/view/:id" element={<ViewProfile />} />
           <Route path="portfolio/create" element={<CreatePortfolio />} />
+          
           <Route path="hirer/onboarding" element={<HirerOnboarding />} />
         </Route>
         
