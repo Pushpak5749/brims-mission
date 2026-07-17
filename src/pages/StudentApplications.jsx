@@ -18,7 +18,7 @@ export default function StudentApplications() {
         const appsList = [];
         
         // Fetch company logos for the jobs
-        for (const applicationDoc of querySnapshot.docs()) {
+        for (const applicationDoc of querySnapshot.docs) {
           const appData = applicationDoc.data();
           let companyLogo = '';
           
