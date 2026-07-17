@@ -121,16 +121,15 @@ export default function MessagingOverlay() {
   if (!currentUser) return null;
 
   return (
-    <div className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-50 flex flex-col items-end">
+    <div className="fixed bottom-[85px] right-4 md:bottom-8 md:right-8 z-50 flex flex-col items-end">
       
       {/* Overlay Window */}
       <AnimatePresence>
         {isOverlayOpen && (
           <motion.div 
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
             className="mb-4 bg-surface-container-lowest rounded-2xl shadow-xl border border-outline-variant w-[350px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[60vh] flex flex-col overflow-hidden"
           >
             {!activeChatId ? (
@@ -229,21 +228,23 @@ export default function MessagingOverlay() {
       </AnimatePresence>
 
       {/* FAB Button */}
-      <button 
-        onClick={() => setIsOverlayOpen(!isOverlayOpen)}
-        className="relative w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center z-50 focus:outline-none"
-      >
-        <span className="material-symbols-outlined text-3xl">
-          {isOverlayOpen ? 'close' : 'chat'}
-        </span>
-        
-        {/* Badge */}
-        {!isOverlayOpen && chats.length > 0 && (
-          <div className="absolute -top-1 -right-1 bg-error text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-surface">
-            {chats.length > 9 ? '9+' : chats.length}
-          </div>
-        )}
-      </button>
+      <div className="fixed bottom-[85px] right-4 md:bottom-8 md:right-8 z-50 flex flex-col items-end">
+        <button 
+          onClick={() => setIsOverlayOpen(!isOverlayOpen)}
+          className="relative w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center focus:outline-none"
+        >
+          <span className="material-symbols-outlined text-3xl">
+            {isOverlayOpen ? 'close' : 'chat'}
+          </span>
+          
+          {/* Badge */}
+          {!isOverlayOpen && chats.length > 0 && (
+            <div className="absolute -top-1 -right-1 bg-error text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-surface">
+              {chats.length > 9 ? '9+' : chats.length}
+            </div>
+          )}
+        </button>
+      </div>
 
     </div>
   );

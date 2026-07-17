@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import TopAppBar from './TopAppBar';
 import MessagingOverlay from './MessagingOverlay';
+import BottomNavBar from './BottomNavBar';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function StudentLayout() {
@@ -45,7 +46,7 @@ export default function StudentLayout() {
         </aside>
 
         {/* Mobile Sidebar Toggle */}
-        <div className="md:hidden fixed bottom-20 right-4 z-50">
+        <div className="md:hidden fixed bottom-[150px] right-4 z-50">
           <button 
             onClick={() => setIsMobileMenuOpen(true)}
             className="w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center"
@@ -94,7 +95,7 @@ export default function StudentLayout() {
         </AnimatePresence>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-x-hidden">
+        <main className="flex-1 overflow-x-hidden pb-24 md:pb-0">
           <AnimatePresence mode="wait">
             <motion.div 
               key={location.pathname}
@@ -103,13 +104,16 @@ export default function StudentLayout() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
               className="p-4 md:p-8 pb-32 md:pb-8"
+              className="p-4 md:p-8 pb-24 md:pb-8"
             >
               <Outlet />
             </motion.div>
           </AnimatePresence>
         </main>
       </div>
+      
       <MessagingOverlay />
+      <BottomNavBar />
     </div>
   );
 }
