@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    match /users/{userId} {
+      // Anyone logged in can read public profiles (needed for Discover/Network/Companies)
+      allow read: if request.auth != null;
+      // Only the user themselves or an admin can edit their profile
+      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+
+    match /jobs/{jobId} {
+      // Anyone logged in can view jobs
+      allow read: if request.auth != null;
+      // Only employers can create jobs for themselves, or admins can edit any job
+      allow create: if request.auth != null && request.resource.data.companyId == request.auth.uid;
+      allow update, delete: if request.auth != null && (resource.data.companyId == request.auth.uid || isAdmin());
+    }
+
+    match /applications/{applicationId} {
+      // Only the applicant, the recruiter, or an admin can read the application
+      allow read: if request.auth != null && (resource.data.applicantId == request.auth.uid || resource.data.recruiterId == request.auth.uid || isAdmin());
+      // Only applicant can apply
+      allow create: if request.auth != null && request.resource.data.applicantId == request.auth.uid;
+      // Only recruiter or admin can update status
+      allow update: if request.auth != null && (resource.data.recruiterId == request.auth.uid || isAdmin());
+      allow delete: if request.auth != null && (resource.data.applicantId == request.auth.uid || isAdmin());
+    }
+
+    match /chats/{chatId} {
+      // Only participants or admins can read/write chats
+      allow read, write: if request.auth != null && (request.auth.uid in resource.data.participants || isAdmin());
+      
+      match /messages/{messageId} {
+        allow read, write: if request.auth != null && (request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants || isAdmin());
+      }
+    }
+  }
+}

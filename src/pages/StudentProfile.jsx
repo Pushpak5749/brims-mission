@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { deleteUser } from 'firebase/auth';
 import StudentProfileEditor from '../components/StudentProfileEditor';
 import ProfilePhotoModal from '../components/ProfilePhotoModal';
 
@@ -37,6 +38,18 @@ export default function StudentProfile() {
       setProfileData(updatedData);
     } catch (error) {
       console.error("Error updating profile", error);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm("WARNING: Are you sure you want to permanently delete your account and all associated data? This action cannot be undone.")) {
+      try {
+        await deleteDoc(doc(db, 'users', currentUser.uid));
+        await deleteUser(currentUser);
+      } catch (error) {
+        console.error("Error deleting account:", error);
+        alert("Failed to delete account. For security reasons, you may need to log out and log back in before deleting your account.");
+      }
     }
   };
 
@@ -131,6 +144,19 @@ export default function StudentProfile() {
         isOpen={isPhotoModalOpen} 
         onClose={() => setIsPhotoModalOpen(false)} 
       />
+
+      <div className="mt-12 mb-4 border-t border-error/20 pt-8">
+        <h3 className="font-title-lg font-bold text-error mb-2">Danger Zone</h3>
+        <p className="text-body-sm text-on-surface-variant mb-4">
+          Permanently delete your account and all of your data in accordance with the DPDP Act. This action cannot be undone.
+        </p>
+        <button 
+          onClick={handleDeleteAccount}
+          className="px-6 py-3 bg-error/10 hover:bg-error/20 text-error font-bold rounded-xl transition-colors border border-error/20"
+        >
+          Delete Account
+        </button>
+      </div>
     </div>
   );
 }

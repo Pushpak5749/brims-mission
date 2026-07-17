@@ -11,6 +11,10 @@ import Login from './pages/Login';
 import CreatePortfolio from './pages/CreatePortfolio';
 import { MessagingProvider } from './context/MessagingContext';
 
+import AdminLogin from './pages/AdminLogin';
+import AdminLayout from './components/AdminLayout';
+import AdminDashboard from './pages/AdminDashboard';
+
 import Home from './pages/Home';
 import About from './pages/About';
 import Internships from './pages/Internships';
@@ -75,6 +79,12 @@ function App() {
           <Route path="applications" element={<StudentApplications />} />
           <Route path="saved" element={<StudentSavedJobs />} />
           <Route path="resume" element={<StudentResume />} />
+        </Route>
+        
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<AdminDashboard />} />
         </Route>
         
         {/* Onboarding outside of specific layouts to keep it clean */}

@@ -1,0 +1,37 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    match /resumes/{userId}/{fileName} {
+      // Only the owner, recruiter they applied to (handled implicitly via signed URLs usually, but hard to do purely via storage rules without mirroring DB state, so we allow auth reads but rely on obscure paths + DB checks in app, OR just allow owner and admin)
+      // Since it's an SPA and they share direct download links, anyone with the exact link and logged in can view.
+      allow read: if request.auth != null; 
+      
+      // Only owner can upload their own resume
+      // Must be PDF/DOCX and under 5MB
+      allow write: if request.auth != null 
+                   && request.auth.uid == userId 
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('application/pdf|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    }
+
+    match /profile_pictures/{userId}/{fileName} {
+      // Publicly readable if logged in
+      allow read: if request.auth != null;
+      // Owner only, must be image, under 5MB
+      allow write: if request.auth != null 
+                   && request.auth.uid == userId
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+    
+    match /{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
