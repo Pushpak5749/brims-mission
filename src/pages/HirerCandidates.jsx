@@ -68,7 +68,8 @@ export default function HirerCandidates() {
         </div>
       ) : (
         <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-surface-container-low border-b border-outline-variant">
@@ -83,7 +84,7 @@ export default function HirerCandidates() {
               <tbody className="divide-y divide-outline-variant/50">
                 {applications.map((app) => (
                   <tr key={app.id} className="hover:bg-surface-container-low/50 transition-colors">
-                    <td className="p-4">
+                    <td className="p-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         <img src={app.applicantPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.applicantName)}`} alt="" className="w-10 h-10 rounded-full object-cover border border-outline-variant" />
                         <div>
@@ -94,11 +95,11 @@ export default function HirerCandidates() {
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 text-body-md font-bold text-on-surface">{app.jobTitle}</td>
-                    <td className="p-4 text-body-sm text-on-surface-variant">
+                    <td className="p-4 text-body-md font-bold text-on-surface whitespace-nowrap">{app.jobTitle}</td>
+                    <td className="p-4 text-body-sm text-on-surface-variant whitespace-nowrap">
                       {new Date(app.appliedAt).toLocaleDateString()}
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 whitespace-nowrap">
                       {app.resumeUrl ? (
                         <a href={app.resumeUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary hover:underline text-body-sm font-bold">
                           <span className="material-symbols-outlined text-[18px]">description</span>
@@ -108,10 +109,10 @@ export default function HirerCandidates() {
                         <span className="text-body-sm text-on-surface-variant italic">No Resume</span>
                       )}
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 whitespace-nowrap">
                       {getStatusBadge(app.status)}
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-4 text-right whitespace-nowrap">
                       <div className="relative inline-block group">
                         <button className="p-2 hover:bg-surface-container rounded-full transition-colors flex items-center gap-1 text-body-sm font-bold text-on-surface-variant">
                           Change Status <span className="material-symbols-outlined text-[18px]">arrow_drop_down</span>
@@ -129,6 +130,57 @@ export default function HirerCandidates() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden flex flex-col divide-y divide-outline-variant/50">
+            {applications.map((app) => (
+              <div key={app.id} className="p-4 flex flex-col gap-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <img src={app.applicantPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.applicantName)}`} alt="" className="w-12 h-12 rounded-full object-cover border border-outline-variant" />
+                    <div>
+                      <p className="font-title-sm font-bold text-on-surface">{app.applicantName}</p>
+                      <p className="text-body-sm text-on-surface-variant font-medium">{app.jobTitle}</p>
+                      <a href={`/profile/view/${app.applicantId}`} target="_blank" rel="noreferrer" className="text-[12px] text-primary hover:underline flex items-center gap-1 mt-0.5">
+                        View Profile <span className="material-symbols-outlined text-[12px]">open_in_new</span>
+                      </a>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[11px] text-on-surface-variant font-medium mb-1">
+                      {new Date(app.appliedAt).toLocaleDateString()}
+                    </p>
+                    {getStatusBadge(app.status)}
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between mt-2 pt-3 border-t border-outline-variant/30">
+                  <div>
+                    {app.resumeUrl ? (
+                      <a href={app.resumeUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary hover:underline text-label-sm font-bold bg-primary/10 px-3 py-1.5 rounded-full">
+                        <span className="material-symbols-outlined text-[16px]">description</span>
+                        Resume
+                      </a>
+                    ) : (
+                      <span className="text-body-sm text-on-surface-variant italic px-3 py-1.5">No Resume</span>
+                    )}
+                  </div>
+                  <div className="relative inline-block group">
+                    <button className="px-3 py-1.5 bg-surface-container rounded-full transition-colors flex items-center gap-1 text-label-sm font-bold text-on-surface-variant border border-outline-variant">
+                      Change Status <span className="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+                    </button>
+                    <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 flex flex-col overflow-hidden">
+                      <button onClick={() => handleStatusChange(app.id, 'shortlisted')} className="px-4 py-3 text-left text-body-sm hover:bg-surface-container-low transition-colors font-medium">Shortlist Candidate</button>
+                      <button onClick={() => handleStatusChange(app.id, 'interview')} className="px-4 py-3 text-left text-body-sm hover:bg-surface-container-low transition-colors font-medium">Schedule Interview</button>
+                      <button onClick={() => handleStatusChange(app.id, 'rejected')} className="px-4 py-3 text-left text-body-sm hover:bg-red-50 text-red-600 transition-colors font-medium">Reject</button>
+                      <div className="border-t border-outline-variant"></div>
+                      <button onClick={() => handleStatusChange(app.id, 'applied')} className="px-4 py-3 text-left text-body-sm hover:bg-surface-container-low transition-colors font-medium">Reset to 'Applied'</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
