@@ -104,6 +104,37 @@ export default function TopAppBar() {
                   >
                     My Profile
                   </Link>
+                  <div className="border-t border-outline-variant my-1"></div>
+                  <div className="px-4 py-1 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Explore</div>
+                  <Link 
+                    to="/internships" 
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full text-left px-4 py-2 text-label-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors block"
+                  >
+                    Internships Portal
+                  </Link>
+                  <Link 
+                    to="/companies" 
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full text-left px-4 py-2 text-label-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors block"
+                  >
+                    Company Directory
+                  </Link>
+                  <Link 
+                    to="/training" 
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full text-left px-4 py-2 text-label-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors block"
+                  >
+                    Career Training
+                  </Link>
+                  <Link 
+                    to="/about" 
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full text-left px-4 py-2 text-label-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors block mb-1"
+                  >
+                    About Us
+                  </Link>
+                  <div className="border-t border-outline-variant my-1"></div>
                   <button 
                     onClick={() => {
                       setIsMenuOpen(false);
