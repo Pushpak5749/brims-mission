@@ -8,12 +8,24 @@ export default function Home() {
       
       {/* Hero Section */}
       <section className="relative px-margin-mobile md:px-margin-desktop py-20 lg:py-32 overflow-hidden flex flex-col items-center text-center">
-        <div className="absolute inset-0 bg-primary/5 -z-10 rounded-b-[3rem]"></div>
+        {/* Background Decorative Elements */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-surface">
+          <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 0.15, scale: 1 }} transition={{ duration: 1.5 }}
+            className="absolute top-[-20%] right-[-10%] w-[60%] h-[70%] rounded-full bg-secondary blur-[100px]"
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 0.15, scale: 1 }} transition={{ duration: 1.5, delay: 0.2 }}
+            className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[70%] rounded-full bg-primary blur-[100px]"
+          />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-surface to-transparent"></div>
+        </div>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-4xl"
+          className="max-w-4xl z-10"
         >
           <span className="inline-block py-1 px-3 rounded-full bg-primary-container text-on-primary-container font-label-md font-bold mb-6">Welcome to Brims Mission</span>
           <h1 className="font-display-lg md:font-display-xl font-extrabold text-on-surface tracking-tight leading-tight mb-6">

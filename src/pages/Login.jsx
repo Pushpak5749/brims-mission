@@ -56,14 +56,22 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col font-body-md text-on-surface selection:bg-secondary-fixed-dim bg-surface relative overflow-hidden">
       {/* Background Decorative Elements */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-surface">
+        {/* Subtle dot pattern */}
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
+        
+        {/* Dynamic Blobs */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 0.1, scale: 1 }} transition={{ duration: 1.5 }}
-          className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-secondary-fixed blur-3xl"
+          initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 0.15, scale: 1 }} transition={{ duration: 1.5 }}
+          className="absolute top-[-20%] right-[-10%] w-[60%] h-[70%] rounded-full bg-secondary blur-[100px]"
         />
         <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 0.2, scale: 1 }} transition={{ duration: 1.5, delay: 0.2 }}
-          className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary-fixed blur-3xl"
+          initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 0.15, scale: 1 }} transition={{ duration: 1.5, delay: 0.2 }}
+          className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[70%] rounded-full bg-primary blur-[100px]"
+        />
+        <motion.div 
+          initial={{ opacity: 0 }} animate={{ opacity: 0.1 }} transition={{ duration: 2, delay: 0.5 }}
+          className="absolute top-[20%] left-[20%] w-[30%] h-[40%] rounded-full bg-tertiary blur-[80px]"
         />
       </div>
 

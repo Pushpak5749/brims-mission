@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import JobPostingModal from '../components/JobPostingModal';
 import { db } from '../firebase';
-import { collection, query, where, getDocs, setDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, setDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 
 export default function HirerJobs() {
   const { currentUser } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingJob, setEditingJob] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,26 +36,44 @@ export default function HirerJobs() {
   const handleSaveJob = async (jobData) => {
     if (!currentUser) return;
     
-    const jobId = crypto.randomUUID();
-    const newJob = {
-      ...jobData,
-      id: jobId,
-      createdAt: Date.now(),
-      company: currentUser.displayName,
-      companyId: currentUser.uid,
-      companyLogo: currentUser.photoURL,
-      verificationStatus: currentUser.verificationStatus || 'unverified'
-    };
-
-    const updatedJobs = [newJob, ...jobs];
-    setJobs(updatedJobs);
-    setIsModalOpen(false);
-
     try {
-      await setDoc(doc(db, 'jobs', jobId), newJob);
+      if (editingJob) {
+        // Update existing job
+        const updatedJobData = {
+          ...jobData,
+          updatedAt: Date.now()
+        };
+        
+        await updateDoc(doc(db, 'jobs', editingJob.id), updatedJobData);
+        
+        setJobs(jobs.map(j => j.id === editingJob.id ? { ...j, ...updatedJobData } : j));
+      } else {
+        // Create new job
+        const newJobRef = doc(collection(db, 'jobs')); // Reliable ID generation
+        const newJob = {
+          ...jobData,
+          id: newJobRef.id,
+          createdAt: Date.now(),
+          company: currentUser.displayName,
+          companyId: currentUser.uid,
+          companyLogo: currentUser.photoURL,
+          verificationStatus: currentUser.verificationStatus || 'unverified'
+        };
+
+        await setDoc(newJobRef, newJob);
+        setJobs([newJob, ...jobs]);
+      }
+      setIsModalOpen(false);
+      setEditingJob(null);
     } catch (error) {
       console.error("Error saving job", error);
+      alert("Failed to save job. Please try again.");
     }
+  };
+
+  const handleEditClick = (job) => {
+    setEditingJob(job);
+    setIsModalOpen(true);
   };
 
   const deleteJob = async (jobId) => {
@@ -75,10 +94,13 @@ export default function HirerJobs() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="font-display-sm">Job Postings</h1>
         <button 
-          onClick={() => setIsModalOpen(true)}
-          className="px-6 py-2 bg-primary text-white rounded-full font-label-md hover:bg-primary/90 transition-colors shadow-sm"
+          onClick={() => {
+            setEditingJob(null);
+            setIsModalOpen(true);
+          }}
+          className="px-6 py-2 bg-primary text-white rounded-full font-label-md hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2"
         >
-          + Post New Job
+          <span className="material-symbols-outlined text-[20px]">add</span> Post New Job
         </button>
       </div>
       
@@ -92,7 +114,10 @@ export default function HirerJobs() {
           <h3 className="font-title-lg font-bold text-on-surface mb-2">No jobs posted yet</h3>
           <p className="text-body-md text-on-surface-variant max-w-sm mx-auto mb-6">Create your first job listing to start receiving applications from top talent.</p>
           <button 
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {
+              setEditingJob(null);
+              setIsModalOpen(true);
+            }}
             className="px-6 py-2 border border-primary text-primary rounded-full font-label-md hover:bg-primary/5 transition-colors"
           >
             Post a Job
@@ -129,13 +154,22 @@ export default function HirerJobs() {
                   <p className="text-display-sm text-primary font-bold">0</p>
                   <p className="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Applicants</p>
                 </div>
-                <button 
-                  onClick={() => deleteJob(job.id)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors flex items-center justify-center"
-                  title="Delete Job"
-                >
-                  <span className="material-symbols-outlined text-[20px]">delete</span>
-                </button>
+                <div className="flex items-center">
+                  <button 
+                    onClick={() => handleEditClick(job)}
+                    className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center"
+                    title="Edit Job"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">edit</span>
+                  </button>
+                  <button 
+                    onClick={() => deleteJob(job.id)}
+                    className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors flex items-center justify-center"
+                    title="Delete Job"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -144,8 +178,12 @@ export default function HirerJobs() {
 
       <JobPostingModal 
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingJob(null);
+        }}
         onSave={handleSaveJob}
+        initialData={editingJob}
       />
     </div>
   );

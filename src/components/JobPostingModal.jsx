@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function JobPostingModal({ isOpen, onClose, onSave }) {
+export default function JobPostingModal({ isOpen, onClose, onSave, initialData = null }) {
   const [formData, setFormData] = useState({
     title: '',
     type: 'Full-time', // Job or Internship or Contract
@@ -13,6 +13,19 @@ export default function JobPostingModal({ isOpen, onClose, onSave }) {
     vacancies: 1,
     deadline: ''
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        ...initialData,
+        skills: Array.isArray(initialData.skills) ? initialData.skills.join(', ') : (initialData.skills || '')
+      });
+    } else {
+      setFormData({
+        title: '', type: 'Full-time', description: '', skills: '', salary: '', location: '', experience: '', vacancies: 1, deadline: ''
+      });
+    }
+  }, [initialData, isOpen]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,7 +53,7 @@ export default function JobPostingModal({ isOpen, onClose, onSave }) {
         className="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
       >
         <div className="px-6 py-4 border-b border-outline-variant flex justify-between items-center bg-surface sticky top-0 z-10">
-          <h2 className="font-headline-sm font-bold text-on-surface">Post a New Job</h2>
+          <h2 className="font-headline-sm font-bold text-on-surface">{initialData ? 'Edit Job Posting' : 'Post a New Job'}</h2>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-surface-container-low transition-colors">
             <span className="material-symbols-outlined">close</span>
           </button>
@@ -99,12 +112,12 @@ export default function JobPostingModal({ isOpen, onClose, onSave }) {
           </form>
         </div>
 
-        <div className="p-4 border-t border-outline-variant bg-surface flex justify-end gap-3 sticky bottom-0">
-          <button onClick={onClose} className="px-5 py-2 rounded-full font-label-md hover:bg-surface-container-high transition-colors">
+        <div className="px-6 py-4 border-t border-outline-variant bg-surface sticky bottom-0 z-10 flex justify-end gap-3">
+          <button onClick={onClose} className="px-6 py-2 rounded-full font-label-md text-on-surface hover:bg-surface-container-low transition-colors">
             Cancel
           </button>
-          <button type="submit" form="job-form" className="px-6 py-2 bg-primary text-white rounded-full font-label-md hover:bg-primary/90 transition-colors">
-            Post Job
+          <button type="submit" form="job-form" className="px-6 py-2 rounded-full bg-primary text-white font-label-md hover:bg-primary/90 transition-colors shadow-sm">
+            {initialData ? 'Save Changes' : 'Post Job'}
           </button>
         </div>
       </motion.div>

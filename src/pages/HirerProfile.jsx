@@ -3,11 +3,14 @@ import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { deleteUser } from 'firebase/auth';
+import HirerProfileEditor from '../components/HirerProfileEditor';
+import { AnimatePresence } from 'framer-motion';
 
 export default function HirerProfile() {
   const { currentUser } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -36,6 +39,18 @@ export default function HirerProfile() {
         console.error("Error deleting account:", error);
         alert("Failed to delete account. For security reasons, you may need to log out and log back in before deleting your account.");
       }
+    }
+  };
+
+  const handleSaveProfileInfo = async (updatedData) => {
+    if (!currentUser) return;
+    try {
+      const docRef = doc(db, 'users', currentUser.uid);
+      await updateDoc(docRef, updatedData);
+      setProfileData({ ...profileData, ...updatedData });
+    } catch (error) {
+      console.error("Error updating profile", error);
+      alert("Failed to update profile. Please try again.");
     }
   };
 
@@ -107,7 +122,7 @@ export default function HirerProfile() {
         </div>
 
         <div className="mt-8 pt-6 border-t border-outline-variant flex justify-end">
-          <button className="px-6 py-2 border border-outline-variant rounded-full font-label-md hover:bg-surface-container-low transition-colors">
+          <button onClick={() => setIsEditorOpen(true)} className="px-6 py-2 border border-outline-variant rounded-full font-label-md hover:bg-surface-container-low transition-colors">
             Edit Profile
           </button>
         </div>
@@ -125,6 +140,16 @@ export default function HirerProfile() {
           </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {isEditorOpen && (
+          <HirerProfileEditor 
+            profileData={profileData} 
+            handleSaveProfileInfo={handleSaveProfileInfo} 
+            onClose={() => setIsEditorOpen(false)} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
