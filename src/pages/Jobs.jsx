@@ -121,13 +121,24 @@ export default function Jobs() {
         
         <div>
           <label className="block text-label-sm font-bold text-on-surface-variant mb-1">Location</label>
-          <input 
-            type="text" 
-            placeholder="City, state, or Remote" 
-            className="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
+          <select 
+            className="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary appearance-none"
             value={filterLocation}
             onChange={e => setFilterLocation(e.target.value)}
-          />
+          >
+            <option value="">All Locations</option>
+            <option value="Bengaluru">Bengaluru</option>
+            <option value="Mumbai">Mumbai</option>
+            <option value="Delhi NCR">Delhi NCR</option>
+            <option value="Hyderabad">Hyderabad</option>
+            <option value="Chennai">Chennai</option>
+            <option value="Pune">Pune</option>
+            <option value="Kolkata">Kolkata</option>
+            <option value="Ahmedabad">Ahmedabad</option>
+            <option value="Gurgaon">Gurgaon</option>
+            <option value="Noida">Noida</option>
+            <option value="Remote">Remote</option>
+          </select>
         </div>
         
         <div>

@@ -109,14 +109,26 @@ export default function Home() {
             </div>
             <div className="flex-1 flex items-center px-4 py-2 bg-surface-container-lowest rounded-full md:rounded-l-none w-full">
               <span className="material-symbols-outlined text-outline mr-3">location_on</span>
-              <input 
-                type="text" 
-                placeholder="Select City" 
+              <select 
                 value={locationTerm}
                 onChange={(e) => setLocationTerm(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full bg-transparent focus:outline-none text-body-lg text-on-surface placeholder:text-outline"
-              />
+                className="w-full bg-transparent focus:outline-none text-body-lg text-on-surface appearance-none cursor-pointer"
+              >
+                <option value="">All Locations</option>
+                <option value="Bengaluru">Bengaluru</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Delhi NCR">Delhi NCR</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Pune">Pune</option>
+                <option value="Kolkata">Kolkata</option>
+                <option value="Ahmedabad">Ahmedabad</option>
+                <option value="Gurgaon">Gurgaon</option>
+                <option value="Noida">Noida</option>
+                <option value="Remote">Remote</option>
+              </select>
+              <span className="material-symbols-outlined text-outline ml-2 pointer-events-none">expand_more</span>
             </div>
             <button 
               onClick={handleSearchClick}
