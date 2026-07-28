@@ -33,7 +33,7 @@ export default function Login() {
       } else {
         await loginWithEmail(formData.email, formData.password);
       }
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       setErrorMsg(error.message);
       setIsLoggingIn(false);
@@ -45,7 +45,7 @@ export default function Login() {
     setErrorMsg('');
     try {
       await loginWithGoogle();
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       console.error("Failed to sign in with Google:", error);
       setErrorMsg(error.message || "Failed to sign in with Google");

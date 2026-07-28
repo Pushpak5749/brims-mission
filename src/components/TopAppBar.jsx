@@ -21,19 +21,12 @@ export default function TopAppBar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  let homeLink = "/";
-  if (currentUser) {
-    if (currentUser.status === 'hiring') {
-      homeLink = currentUser.verificationStatus ? "/hirer/dashboard" : "/hirer/onboarding";
-    } else if (currentUser.status === 'searching') {
-      homeLink = currentUser.onboardingComplete ? "/student/dashboard" : "/student/onboarding";
-    }
-  }
+  let logoLink = currentUser ? "/dashboard" : "/";
 
   return (
     <header className="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 gap-2">
       <div className="flex items-center gap-2 md:gap-4 flex-1">
-        <Link to={homeLink} className="shrink-0">
+        <Link to={logoLink} className="shrink-0">
           <h1 className="font-headline-md text-headline-md font-extrabold text-primary tracking-tight hidden sm:block">Brims Mission</h1>
           <h1 className="font-headline-md text-headline-md font-extrabold text-primary tracking-tight sm:hidden text-xl">BM</h1>
         </Link>
@@ -41,7 +34,9 @@ export default function TopAppBar() {
       </div>
 
       {currentUser ? (
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
+          <Link to="/" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Home</Link>
+          <Link to="/about" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">About Us</Link>
           <Link to="/discover" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Discover</Link>
           <Link to="/network" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Network</Link>
           <Link to="/jobs" className="text-on-surface-variant hover:text-primary font-bold font-label-md text-label-md transition-colors">Jobs</Link>
@@ -98,7 +93,14 @@ export default function TopAppBar() {
                   className="absolute top-14 right-0 bg-surface-container-lowest shadow-lg border border-outline-variant rounded-xl p-2 z-[100] min-w-[150px]"
                 >
                   <Link 
-                    to="/" 
+                    to="/dashboard" 
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full text-left px-4 py-2 text-label-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors block mb-1 font-bold text-primary"
+                  >
+                    My Dashboard
+                  </Link>
+                  <Link 
+                    to="/profile" 
                     onClick={() => setIsMenuOpen(false)}
                     className="w-full text-left px-4 py-2 text-label-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors block mb-1"
                   >
@@ -126,6 +128,13 @@ export default function TopAppBar() {
                     className="w-full text-left px-4 py-2 text-label-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors block"
                   >
                     Career Training
+                  </Link>
+                  <Link 
+                    to="/" 
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full text-left px-4 py-2 text-label-md text-on-surface hover:bg-surface-container-low rounded-lg transition-colors block mb-1"
+                  >
+                    Home Page
                   </Link>
                   <Link 
                     to="/about" 

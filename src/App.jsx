@@ -38,6 +38,24 @@ import StudentApplications from './pages/StudentApplications';
 import StudentSavedJobs from './pages/StudentSavedJobs';
 import StudentResume from './pages/StudentResume';
 
+import { useAuth } from './context/AuthContext';
+import { Navigate } from 'react-router-dom';
+
+function DashboardRedirect() {
+  const { currentUser } = useAuth();
+  if (!currentUser) return <Navigate to="/login" />;
+  if (currentUser.status === 'hiring') return <Navigate to="/hirer/dashboard" />;
+  if (currentUser.status === 'searching') return <Navigate to="/student/dashboard" />;
+  return <Navigate to="/student/onboarding" />;
+}
+
+function ProfileRedirect() {
+  const { currentUser } = useAuth();
+  if (!currentUser) return <Navigate to="/login" />;
+  if (currentUser.status === 'hiring') return <Navigate to="/hirer/profile" />;
+  return <Navigate to="/student/profile" />;
+}
+
 function App() {
   return (
     <>
@@ -60,6 +78,9 @@ function App() {
           <Route path="search" element={<Search />} />
           <Route path="profile/view/:id" element={<ViewProfile />} />
           <Route path="portfolio/create" element={<CreatePortfolio />} />
+          
+          <Route path="dashboard" element={<DashboardRedirect />} />
+          <Route path="profile" element={<ProfileRedirect />} />
           
           <Route path="hirer/onboarding" element={<HirerOnboarding />} />
         </Route>
