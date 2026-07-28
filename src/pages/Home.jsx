@@ -1,8 +1,54 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { db } from '../firebase';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 export default function Home() {
+  const navigate = useNavigate();
+  const [jobs, setJobs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [locationTerm, setLocationTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const q = query(collection(db, 'jobs'));
+        const querySnapshot = await getDocs(q);
+        const jobsList = [];
+        querySnapshot.forEach((doc) => {
+          jobsList.push({ id: doc.id, ...doc.data() });
+        });
+        jobsList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        setJobs(jobsList);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobs();
+  }, []);
+
+  const filteredJobs = jobs.filter(job => {
+    const matchesSearch = !searchTerm || 
+      (job.title && job.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (job.company && job.company.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+    const matchesLocation = !locationTerm || 
+      (job.location && job.location.toLowerCase().includes(locationTerm.toLowerCase()));
+
+    return matchesSearch && matchesLocation;
+  });
+
+  const displayedJobs = filteredJobs.slice(0, 6);
+
+  const handleJobClick = () => {
+    // Force users to login to view/apply for jobs if they are clicking from the public homepage
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen bg-surface flex flex-col pt-16">
       
@@ -32,17 +78,86 @@ export default function Home() {
             Empowering Your Career Journey.
           </h1>
           <p className="text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">
-            Connect with top companies, discover tailored internships, and access the tools you need to build a stellar professional profile.
+            Find the best job near you. Discover tailored internships and access the tools you need to build a stellar professional profile.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/login" className="px-8 py-4 bg-primary text-white rounded-full font-label-lg font-bold hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl w-full sm:w-auto">
-              Get Started Now
-            </Link>
-            <Link to="/jobs" className="px-8 py-4 bg-surface-container text-on-surface rounded-full font-label-lg font-bold hover:bg-surface-container-high transition-colors w-full sm:w-auto border border-outline-variant">
-              Browse Jobs
-            </Link>
+          
+          {/* Main Search Bar */}
+          <div className="bg-surface p-2 md:p-3 rounded-full shadow-lg max-w-4xl mx-auto flex flex-col md:flex-row gap-2 border border-outline-variant items-center w-full">
+            <div className="flex-1 flex items-center px-4 py-2 bg-surface-container-lowest rounded-full md:border-r border-outline-variant md:rounded-r-none w-full">
+              <span className="material-symbols-outlined text-outline mr-3">search</span>
+              <input 
+                type="text" 
+                placeholder="Search Job Title, Role" 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-transparent focus:outline-none text-body-lg text-on-surface placeholder:text-outline"
+              />
+            </div>
+            <div className="flex-1 flex items-center px-4 py-2 bg-surface-container-lowest rounded-full md:rounded-l-none w-full">
+              <span className="material-symbols-outlined text-outline mr-3">location_on</span>
+              <input 
+                type="text" 
+                placeholder="Select City" 
+                value={locationTerm}
+                onChange={(e) => setLocationTerm(e.target.value)}
+                className="w-full bg-transparent focus:outline-none text-body-lg text-on-surface placeholder:text-outline"
+              />
+            </div>
+            <button className="bg-primary text-white font-label-lg font-bold px-10 py-4 rounded-full hover:bg-primary/90 transition-colors w-full md:w-auto shadow-sm">
+              SEARCH
+            </button>
+          </div>
+          <div className="mt-6 text-on-surface-variant font-medium">
+            <span className="text-primary font-bold">{jobs.length}+</span> active job vacancies to grab
           </div>
         </motion.div>
+      </section>
+
+      {/* Featured Jobs Section */}
+      <section className="px-margin-mobile md:px-margin-desktop py-16 bg-surface-container-lowest">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-end mb-10 border-b border-outline-variant pb-4">
+            <div className="flex gap-8">
+              <h2 className="font-title-lg font-bold text-primary border-b-2 border-primary pb-4 -mb-[18px]">Top Job Roles</h2>
+            </div>
+          </div>
+          
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <span className="material-symbols-outlined animate-spin text-4xl text-primary">refresh</span>
+            </div>
+          ) : displayedJobs.length === 0 ? (
+            <div className="text-center py-10 text-on-surface-variant">No jobs found matching your criteria.</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {displayedJobs.map(job => (
+                <div 
+                  key={job.id} 
+                  onClick={handleJobClick}
+                  className="bg-surface border border-outline-variant rounded-2xl p-6 text-center flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:shadow-md transition-all group"
+                >
+                  <div className="w-16 h-16 bg-surface-container-lowest rounded-full flex items-center justify-center mb-4 shadow-sm border border-outline-variant overflow-hidden p-2 group-hover:scale-110 transition-transform">
+                    {job.companyLogo ? (
+                      <img src={job.companyLogo} alt={job.company} className="w-full h-full object-contain" />
+                    ) : (
+                      <span className="material-symbols-outlined text-3xl text-primary">work</span>
+                    )}
+                  </div>
+                  <h3 className="font-title-sm font-bold text-on-surface mb-1 line-clamp-2">{job.title}</h3>
+                  <p className="text-label-sm text-on-surface-variant">{job.company}</p>
+                </div>
+              ))}
+              
+              {filteredJobs.length > 6 && (
+                <Link to="/jobs" className="bg-primary border border-primary rounded-2xl p-6 text-center flex flex-col items-center justify-center hover:bg-primary/90 transition-all text-white group">
+                  <span className="material-symbols-outlined text-4xl mb-2 group-hover:scale-110 transition-transform">grid_view</span>
+                  <h3 className="font-title-sm font-bold mb-1">View All</h3>
+                  <p className="text-label-sm text-primary-container">{filteredJobs.length} Active Jobs</p>
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* About BRIM Mission Summary */}
