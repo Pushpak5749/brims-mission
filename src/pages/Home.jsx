@@ -49,6 +49,19 @@ export default function Home() {
     navigate('/login');
   };
 
+  const handleSearchClick = () => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.append('search', searchTerm);
+    if (locationTerm) params.append('location', locationTerm);
+    navigate(`/jobs?${params.toString()}`);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearchClick();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-surface flex flex-col pt-16">
       
@@ -90,6 +103,7 @@ export default function Home() {
                 placeholder="Search Job Title, Role" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full bg-transparent focus:outline-none text-body-lg text-on-surface placeholder:text-outline"
               />
             </div>
@@ -100,10 +114,14 @@ export default function Home() {
                 placeholder="Select City" 
                 value={locationTerm}
                 onChange={(e) => setLocationTerm(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full bg-transparent focus:outline-none text-body-lg text-on-surface placeholder:text-outline"
               />
             </div>
-            <button className="bg-primary text-white font-label-lg font-bold px-10 py-4 rounded-full hover:bg-primary/90 transition-colors w-full md:w-auto shadow-sm">
+            <button 
+              onClick={handleSearchClick}
+              className="bg-primary text-white font-label-lg font-bold px-10 py-4 rounded-full hover:bg-primary/90 transition-colors w-full md:w-auto shadow-sm"
+            >
               SEARCH
             </button>
           </div>

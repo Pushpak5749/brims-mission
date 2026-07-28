@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import MiniProfileCard from '../components/MiniProfileCard';
 import { db } from '../firebase';
@@ -8,6 +9,11 @@ import JobApplicationModal from '../components/JobApplicationModal';
 
 export default function Jobs() {
   const { currentUser } = useAuth();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialSearch = searchParams.get('search') || '';
+  const initialLocation = searchParams.get('location') || '';
+
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savedJobs, setSavedJobs] = useState([]);
@@ -15,8 +21,8 @@ export default function Jobs() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   
   // Filters state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterLocation, setFilterLocation] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [filterLocation, setFilterLocation] = useState(initialLocation);
   const [filterJobType, setFilterJobType] = useState('');
   const [filterIndustry, setFilterIndustry] = useState('');
 
